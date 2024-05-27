@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F84DCF8A-FC1A-4677-AF4D-616AD7DB3470}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "WebData", "src\WebData\WebData.fsproj", "{3FA5182A-1D60-40E9-B9B1-8D6502E43A96}"
+EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Server", "src\Server\Server.fsproj", "{B56110F0-2D27-4718-8C80-E7FDE3439A63}"
 EndProject
 Global
