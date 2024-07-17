@@ -55,6 +55,7 @@ let configServices services =
     services
 let app =
     application {
+        url "http://0.0.0.0:5000"
         use_router webApp
         memory_cache
         use_static "public/"
