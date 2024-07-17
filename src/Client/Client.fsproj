@@ -6,16 +6,14 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Giraffe.ViewEngine" Version="1.4.0"/>
+        <PackageReference Include="Giraffe.ViewEngine" Version="1.4.0" />
     </ItemGroup>
 
-    <ItemGroup>
-        <Compile Include="Helpers.fs"/>
+    <ItemGroup>        
+        <Compile Include="SharedView.fs" />        
+        <Compile Include="Grid.fs" />
         <Compile Include="Index.fs"/>
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\WebData\WebData.fsproj" />
+        <Content Include="public\style.css" CopyToOutputDirectory="Always"/>
     </ItemGroup>
 
 </Project>
