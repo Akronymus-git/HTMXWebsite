@@ -6,6 +6,7 @@ open Saturn
 open Client.IsoGridRandomizer
 open Client.Index
 open Client.RandomStuff
+open Client.About
 
 let murderBingoRouter =
     router {
@@ -40,7 +41,7 @@ let forbiddenPipeline =
 let webApp =
     router {
         get "/" (htmlView Index)
-        get "/about" (htmlView Index)
+        get "/about" (htmlView About)
         get "/randomStuff" (htmlView RandomStuff)
         forward "/murderBingo" murderBingoRouter
         forward "/isometricGridRandomizer" (fun x -> gridRandomizerMiddleware ((DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() % (Int32.MaxValue |> int64)) |> int) x)
