@@ -16,4 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Client\Client.fsproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="public\style.css" />
+  </ItemGroup>
 </Project>

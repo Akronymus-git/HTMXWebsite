@@ -2,16 +2,21 @@
 
 open Giraffe.ViewEngine
 
-let basicLayout = div [ _style """grid-template-areas: "navbar" "main";width:100%;""" ]
+
+
+let link path name =
+    a [_href path] [Text name]
+
+let basicLayout = div [
+    _id "pagelayout" 
+]
 let basicNavbar =
     [div
-        [_style "display:flex;flex-direction:row;background-color: #8888BB;"]
+        [_id "navbar"]
         [
-            a
-                [
-                    _href "/"
-                ]
-                [Text "Home"]
+          link "/" "Home"
+          link "/about" "About"
+          link "/randomStuff" "Random stuff"
         ]]
 
 let SharedViewLayout (pagelayout: XmlNode list -> XmlNode) (navbar: XmlNode list) (_title: string) (_body: XmlNode list) =
@@ -24,7 +29,7 @@ let SharedViewLayout (pagelayout: XmlNode list -> XmlNode) (navbar: XmlNode list
                     title
                         []
                         [ Text _title ]
-                    link [
+                    HtmlElements.link [
                         _rel "stylesheet"
                         _href "style.css"
                     ]
@@ -36,6 +41,7 @@ let SharedViewLayout (pagelayout: XmlNode list -> XmlNode) (navbar: XmlNode list
                         [
                             div [_style "grid-area:navbar;"] navbar
                             div [_style "grid-area:main"] _body
+                            div [_style "grid-area:sidebar"] []
                         ]
                 ]
         ]

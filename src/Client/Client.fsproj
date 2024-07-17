@@ -11,9 +11,11 @@
 
     <ItemGroup>        
         <Compile Include="SharedView.fs" />        
-        <Compile Include="Grid.fs" />
         <Compile Include="Index.fs"/>
-        <Content Include="public\style.css" CopyToOutputDirectory="Always"/>
+        <Compile Include="RandomStuff.fs" />
+        <Compile Include="NotFound.fs" />
+        <Compile Include="IsoGridRandomizer.fs" />
     </ItemGroup>
+
 
 </Project>
