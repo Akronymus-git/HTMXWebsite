@@ -1,5 +1,6 @@
 module Server
 
+open System
 open Giraffe
 open Saturn
 open Client.IsoGridRandomizer
@@ -11,9 +12,20 @@ let murderBingoRouter =
         get "" (htmlString "")
     }
     
-let gridRandomizerMiddleware () =
-    pipeline {
-        plug (htmlView (IsoGridRandomizer ()))
+    
+let getIsoGrid seed : HttpHandler =
+    fun f ctx -> 
+        let x = ctx.GetQueryStringValue "x" |> Result.map int
+        let y = ctx.GetQueryStringValue "y" |> Result.map int
+        match x,y with
+        | Ok x1, Ok y1 ->
+            htmlView (IsoGridRandomizer seed x1 y1) f ctx
+        | _ ->
+            htmlView (IsoGridForm) f ctx
+            
+let gridRandomizerMiddleware seed =
+    router {
+        get "" (getIsoGrid seed)
     }
 let notFoundPipeline =
     pipeline {
@@ -31,7 +43,7 @@ let webApp =
         get "/about" (htmlView Index)
         get "/randomStuff" (htmlView RandomStuff)
         forward "/murderBingo" murderBingoRouter
-        forward "/isometricGridRandomizer" (fun x -> gridRandomizerMiddleware () x)
+        forward "/isometricGridRandomizer" (fun x -> gridRandomizerMiddleware ((DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() % (Int32.MaxValue |> int64)) |> int) x)
         get "" (notFoundPipeline)
         post "" forbiddenPipeline
         patch "" forbiddenPipeline
