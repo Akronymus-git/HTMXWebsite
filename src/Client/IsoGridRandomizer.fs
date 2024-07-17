@@ -11,9 +11,9 @@ let IsoGridRandomizer seed xSize ySize =
     SharedView.basicPage
         "IsoGridRandomier"
         [
-            div [_class "isoGridContainer"; _style $"grid-template-columns: repeat({xSize + 1},1fr);"] [
-                for i in 0..xSize  do
-                    for j in 0..ySize do
+            div [_class "isoGridContainer"; _style $"grid-template-columns: repeat({xSize},1fr);"] [
+                for i in 0..xSize - 1 do
+                    for j in 0..ySize - 1 do
                         match i,j with
                         | x, y when x = randx && y = randy -> div [_class "tile hit"; _style "aspect-ratio:1"] [ Text $"{i},{j}" ] 
                         | _ -> div [_class "tile grass"; _style "aspect-ratio:1"] [ Text $"{i},{j}" ]
