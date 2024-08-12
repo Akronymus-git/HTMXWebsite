@@ -17,3 +17,5 @@ release.sh
 *.fsproj.user
 *.DotSettings.user
 *.fs.js
+/src/Server/.init
+/src/Server/init.sql

@@ -5,18 +5,23 @@
     <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AdminPipeline.fs" />
     <Compile Include="Server.fs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.5" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.5" />
+    <PackageReference Include="Giraffe.Htmx" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.7" />
     <PackageReference Include="Saturn" Version="0.16.1" />
-    <PackageReference Update="FSharp.Core" Version="8.0.100" />
+    <PackageReference Update="FSharp.Core" Version="8.0.301" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Client\Client.fsproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="public\style.css" />
+    <Content Include="public\htmx.min.js" />
+    <Content Include="public\favicon.ico" />
+    <Content Include="init.sql" />
+    <Content Include="dbInit.sql" />
   </ItemGroup>
 </Project>

@@ -7,11 +7,14 @@
 
     <ItemGroup>
         <PackageReference Include="Giraffe.ViewEngine" Version="1.4.0" />
+        <PackageReference Update="FSharp.Core" Version="8.0.301" />
+        <PackageReference Include="Giraffe.ViewEngine.Htmx" Version="2.0.0" />
     </ItemGroup>
 
     <ItemGroup>        
         <Compile Include="SharedView.fs" />        
         <Compile Include="Index.fs"/>
+        <Compile Include="Admin.fs" />
         <Compile Include="About.fs" />
         <Compile Include="RandomStuff.fs" />
         <Compile Include="NotFound.fs" />
