@@ -15,6 +15,7 @@ open Client.About
 open System.Collections.Generic
 open Server.AdminPipeline
 open Giraffe.Htmx
+open Client.MurderBingo
 [<Literal>]
 let sqlConnection = "Data Source=data.db"
 let getQuery (func: SqliteCommand -> unit) (parseRow: SqliteDataReader -> 'a) =
@@ -37,19 +38,19 @@ let checkIfTokenExists token =
     getQuery f read |> Seq.length |> (<>) 0
 
 let murderBingoRouter =
-    let decider: HttpHandler =
-        fun (f: HttpFunc) (ctx: HttpContext) ->
-            let cookie = ctx.GetCookieValue "auth"
-
-            match cookie with
-            | None -> htmlString "" f ctx
-            | Some x ->
-                match checkIfTokenExists x with
-                | true -> htmlString "auth" f ctx
-                | _ -> htmlString "not auth" f ctx
-
+    //let decider: HttpHandler =
+    //    fun (f: HttpFunc) (ctx: HttpContext) ->
+    //        let cookie = ctx.GetCookieValue "auth"
+    //
+    //        match cookie with
+    //        | None -> htmlString "" f ctx
+    //        | Some x ->
+    //            match checkIfTokenExists x with
+    //            | true -> htmlString "auth" f ctx
+    //            | _ -> htmlString "not auth" f ctx
+    //
     
-    router { get "" decider }
+    router { get "" (htmlString murderbingo) }
 
 
 let viewWithContext (stuff: bool -> XmlNode) f (ctx:HttpContext) =

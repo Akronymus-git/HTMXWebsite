@@ -9,5 +9,5 @@ let RandomStuff =
         [ div
               [ _style "display:flex;flex-direction:column" ]
               [ h1 [] [ Text "This is where my random side projects go" ]
-                link "/murderBingo" "Murder bingo for DDRJake"
+                a [_href "/murderBingo"] [Text "Murder bingo for DDRJake"]
                 link "/isometricGridRandomizer" "Randomizer for Tytar" ] ]

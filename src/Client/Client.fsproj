@@ -12,6 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>        
+        <Compile Include="MurderBingo.fs" />        
         <Compile Include="SharedView.fs" />        
         <Compile Include="Index.fs"/>
         <Compile Include="Admin.fs" />
