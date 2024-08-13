@@ -13,29 +13,41 @@ let murderbingo = """<!-- Thanks to:
     <style>
       body {
         margin: 8px;
+        background-color: #333;
+        color: #ccc;
       }
       td {
-        border: 1px solid black;
+        border: 1px solid #CCC;
         vertical-align: middle;
         text-align: center;
-        height: 10rem;
-        width: 10rem;
+        aspect-ratio: 1;
         cursor: pointer;
         user-select: none;
+        transform: rotate(1deg);
       }
       th {
         font-size: 2rem;
         padding: 1rem;
+        height: 
       }
       thead {
-        background: black;
-        color: white;
+       background-color: #ccc;
+        color: #333;
+        height: 100px
       }
-      table {
+      tbody {
+      }
+      table{
         border-collapse: collapse;
-      }
+        height: 100%;
+        
+        }
       .won {
-        background: #ACD3ED;
+        background: #919191;
+        color: #000;
+      }
+      #root {
+        height: 100vh;
       }
     </style>
   </head>
