@@ -1,0 +1,17 @@
+{
+  "module": "commonjs",
+  "sourceMaps": true,
+  "projFile": "../IncrementalGame/IncrementalGame.fsproj",
+  "outDir": "temp",
+  "scripts": {
+    "prebuild": "npm install",
+    "postbuild": "webpack --config webpack.config.js"
+  },
+  "targets": {
+    "watch": {
+      "scripts": {
+        "postbuild": "webpack --watch"
+      }
+    }
+  }
+}

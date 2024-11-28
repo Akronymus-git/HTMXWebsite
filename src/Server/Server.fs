@@ -3,6 +3,7 @@ module Server.Server
 open System
 open System.IO
 open System.Net.Http
+open Client
 open Giraffe
 open Giraffe.ViewEngine.HtmlElements
 open Microsoft.AspNetCore.Http
@@ -38,17 +39,17 @@ let checkIfTokenExists token =
     getQuery f read |> Seq.length |> (<>) 0
 
 let murderBingoRouter =
-    //let decider: HttpHandler =
-    //    fun (f: HttpFunc) (ctx: HttpContext) ->
-    //        let cookie = ctx.GetCookieValue "auth"
-    //
-    //        match cookie with
-    //        | None -> htmlString "" f ctx
-    //        | Some x ->
-    //            match checkIfTokenExists x with
-    //            | true -> htmlString "auth" f ctx
-    //            | _ -> htmlString "not auth" f ctx
-    //
+    let decider: HttpHandler =
+        fun (f: HttpFunc) (ctx: HttpContext) ->
+            let cookie = ctx.GetCookieValue "auth"
+    
+            match cookie with
+            | None -> htmlString "" f ctx
+            | Some x ->
+                match checkIfTokenExists x with
+                | true -> htmlString "auth" f ctx
+                | _ -> htmlString "not auth" f ctx
+    
     
     router { get "" (htmlString murderbingo) }
 
@@ -94,7 +95,6 @@ where Tokens.token = $token and Roles.roleId = 0"""
              match res with
              | false -> forbiddenPipeline func ctx
              | true -> AuthorizedAdminPipeline func ctx
-         
     
 let webApp =
     router {
@@ -109,7 +109,7 @@ let webApp =
                 ((DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() % (Int32.MaxValue |> int64))
                  |> int)
                 x)
-
+        get "/rpg" (htmlView Incremental.Incremental)
         get "" notFoundPipeline
         post "" forbiddenPipeline
         patch "" forbiddenPipeline
@@ -125,21 +125,9 @@ let app =
         url "http://localhost:5000"
         use_router webApp 
         memory_cache 
-        use_static "public/" 
+        use_static "public/"
         use_gzip
         service_config configServices 
 
     }
-let init() =
-    try  
-        use connect = new SqliteConnection(sqlConnection)
-        connect.Open()
-        let cmd =  connect.CreateCommand()
-        cmd.CommandText <- ((File.ReadAllText "dbInit.sql") + (File.ReadAllText "init.sql"))
-        cmd.ExecuteNonQuery() |> ignore
-    with
-    | ex -> Console.WriteLine ex.Message
-        
-    
-init() 
 run app

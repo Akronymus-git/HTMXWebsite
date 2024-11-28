@@ -19,3 +19,5 @@ release.sh
 *.fs.js
 /src/Server/.init
 /src/Server/init.sql
+*bundle.js*
+/src/Server/dist/

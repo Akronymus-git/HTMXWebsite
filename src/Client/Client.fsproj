@@ -20,6 +20,7 @@
         <Compile Include="RandomStuff.fs" />
         <Compile Include="NotFound.fs" />
         <Compile Include="IsoGridRandomizer.fs" />
+        <Compile Include="Incremental.fs" />
     </ItemGroup>
 
 

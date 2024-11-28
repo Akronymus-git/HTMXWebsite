@@ -19,9 +19,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="public\style.css" />
-    <Content Include="public\htmx.min.js" />
     <Content Include="public\favicon.ico" />
-    <Content Include="init.sql" />
-    <Content Include="dbInit.sql" />
+    <Content Include="webpack.config.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="dist\fable_modules\fable-library-js.4.24.0\package.json" />
+    <_ContentIncludedByDefault Remove="dist\fable_modules\project_cracked.json" />
+    <_ContentIncludedByDefault Remove="fable_modules\fable-library-js.4.24.0\package.json" />
+    <_ContentIncludedByDefault Remove="fable_modules\project_cracked.json" />
   </ItemGroup>
 </Project>
