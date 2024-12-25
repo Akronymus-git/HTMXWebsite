@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "dotnet fable ../IncrementalGame/IncrementalGame.fsproj -o dist",
-    "watch": "dotnet fable ../IncrementalGame/IncrementalGame.fsproj -o dist -w --target watch"
+    "build": "dotnet fable ../IncrementalGame/IncrementalGame.fsproj -o dist --noCache",
+    "watch": "dotnet fable ../IncrementalGame/IncrementalGame.fsproj -o dist --noCache --watch"
   },
   "author": "",
   "license": "ISC",

@@ -38,3 +38,12 @@ You will find more documentation about the used F# components at the following p
 * [Saturn](https://saturnframework.org/)
 * [Fable](https://fable.io/docs/)
 * [Elmish](https://elmish.github.io/elmish/)
+
+
+Dev Setup: 
+```bash
+cd src/Server
+dotnet run
+npm run watch
+webpack --config webpack.config.js --mode development --watch
+```
