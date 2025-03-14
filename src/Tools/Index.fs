@@ -9,6 +9,7 @@ open Fable.SimpleJson
 open Feliz
 open FSharp.Data.JsonExtensions
 open FSharp.Data
+open Feliz.Styles
 open Newtonsoft.Json
 
 [<Literal>]
@@ -21,11 +22,13 @@ type SaveGame = Fable.JsonProvider.Generator<sample>
 type Model =
     { input: string
       namesList: string
+      priorityNamesList: string
       output: string }
 
 type Msg =
     | InputChange of string
     | NamesListChanged of string
+    | PriorityNamesListChanged of string
     | Process
 
 type sav = { Save: SaveGame }
@@ -33,63 +36,117 @@ open Elmish
 
 
 let init () =
-    { input = ""
+    { input = sample
       output = ""
-      namesList = "" },
+      namesList = ""
+      priorityNamesList = "" },
     Cmd.Empty
 
 let update msg model =
     match msg with
     | InputChange str -> { model with input = str }, Cmd.none
     | NamesListChanged str -> { model with namesList = str }, Cmd.none
+    | PriorityNamesListChanged str -> { model with priorityNamesList = str }, Cmd.none
     | Process ->
         let data = model.input.Split "\"name\":\""
         let d1 = (Seq.head data) + "\"name\":\""
         let d2 = Seq.tail data
+
         let chunks =
-            Seq.map (fun (x:string) -> Seq.skipWhile (fun y -> y <> '\"') x |> Seq.skip 1 |> Seq.toArray |> Seq.map (fun c -> $"{c}") |> String.concat "") d2
+            Seq.map
+                (fun (x: string) ->
+                    Seq.skipWhile (fun y -> y <> '\"') x
+                    |> Seq.skip 1
+                    |> Seq.toArray
+                    |> Seq.map (fun c -> $"{c}")
+                    |> String.concat "")
+                d2
             |> Seq.map (fun x -> x + "\"name\":\"")
-        console.log (Seq.toArray chunks)
+            |> Seq.append [d1]
+
+
+        let namesarr =
+            model.namesList.Split([| ';'; ','; '\r'; '\n' |])
+            |> Seq.distinct
+            |> Seq.where (fun x -> x.Length > 0)
+            |> Seq.toArray
+        console.log "namesarr"
+        let priorityNames =
+            model.priorityNamesList.Split([| ';'; ','; '\r'; '\n' |])
+            |> Seq.distinct
+            |> Seq.where (fun x -> x.Length > 0)
+            |> Seq.toArray
+        console.log "priority"
         let names =
-            let namesarr =
-                model.namesList.Split([|';';',';'\r';'\n'|]) |> Seq.distinct
-                |> Seq.where (fun x -> x.Length > 0)
-                |> Seq.toArray
-            for i in 0..namesarr.Length - 1 do
-                let idx = namesarr.Length - 1 - i
-                let rIdx = int (Math.floor(Math.random() * (float idx)))
-                let buf = namesarr[idx]
-                namesarr[idx] <- namesarr[rIdx]
-                namesarr[rIdx] <- buf
-            namesarr
-            |> fun s -> Seq.append s (Seq.unfold (fun state -> Some ("TooManySlots", state)) "")
-            
+            Seq.concat [seq priorityNames; seq namesarr; (Seq.unfold (fun state -> Some("TooManySlots" + (state.ToString()), state + 1)) 0)]
+            |> Seq.distinct
+            |> Seq.take (Seq.length chunks)
+            |> Seq.toArray
+        console.log "names"
+        for i in 0 .. names.Length - 1 do 
+            let idx = names.Length - 1 - i
+            let rIdx = int (Math.floor (Math.random () * (float idx)))
+            let buf = names[idx]
+            names[idx] <- names[rIdx]
+            names[rIdx] <- buf
+        console.log "randomized"
         let res =
-            Seq.zip (Seq.concat [ seq [d1]; chunks]) names
+            Seq.zip chunks names
             |> Seq.map (fun (chunk, name) -> chunk + name + "\"")
+            |> Seq.rev
+            |> Seq.skip 1
+            |> Seq.rev
             |> String.concat ""
-        
-        { model with
-            output = res },
-        Cmd.none
+            
+        console.log "res"
+        let result = res + (Seq.last chunks)
+        { model with output = result.Substring(0, result.Length - 8)}, Cmd.none
 
 let view (model: Model) dispatch =
     Html.div
-        [ prop.style [ style.color "black !important" ]
+        [ prop.style
+              [
+                  style.width (length.perc 70)
+                  style.display.flex
+                  style.flexDirection.column
+              ]
           prop.children
-              [ Html.textarea
-                    [ prop.type' "text"
-                      prop.onChange (fun (x: string) -> dispatch (Msg.InputChange x))
-                      prop.text model.input
-                      prop.style [
-                          style.color "black"
-                      ]]
-                Html.textarea
-                    [ prop.type' "text"
-                      prop.onChange (fun (x: string) -> dispatch (Msg.NamesListChanged x))
-                      prop.text model.namesList
-                      prop.style [
-                          style.color "black"
-                      ]]
+              [
+                Html.div [
+                    prop.style [ style.display.flex; style.flexDirection.column ]
+                    prop.children [
+                        Html.text "save"
+                        Html.textarea [
+                            prop.type' "text"
+                            prop.onChange (fun (x: string) -> dispatch (Msg.InputChange x))
+                            prop.value model.input
+                            prop.style [ style.color "black" ] ]
+                    ]
+                ]
+                Html.div
+                    [ prop.style [ style.display.flex; style.flexDirection.column ]
+                      prop.children
+                          [ Html.text "names"
+                            Html.textarea
+                                [ prop.type' "text"
+                                  prop.onChange (fun (x: string) -> dispatch (Msg.NamesListChanged x))
+                                  prop.value model.namesList
+                                  prop.style [ style.color "black" ] ] ] ]
+                Html.div
+                    [ prop.style [ style.display.flex; style.flexDirection.column ]
+                      prop.children
+                          [ Html.text "priority Names"
+                            Html.textarea
+                                [ prop.type' "text"
+                                  prop.onChange (fun (x: string) -> dispatch (Msg.PriorityNamesListChanged x))
+                                  prop.value model.priorityNamesList
+                                  prop.style [ style.color "black" ] ] ] ]     
                 Html.button [ prop.onClick (fun _ -> dispatch Msg.Process); prop.text "Process" ]
-                Html.div [ prop.text model.output ] ] ]
+                Html.textarea [
+                    prop.style [
+                        style.color "black"
+                        style.height (length.px 200)
+                    ]
+                    prop.readOnly true
+                    prop.value model.output
+                ] ] ]
