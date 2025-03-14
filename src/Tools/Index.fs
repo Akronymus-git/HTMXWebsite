@@ -51,8 +51,18 @@ let update msg model =
             |> Seq.map (fun x -> x + "\"name\":\"")
         console.log (Seq.toArray chunks)
         let names =
-            model.namesList.Split([|';';',';'\r';'\n'|]) |> Seq.distinct 
-            |> fun s -> Seq.append s (Seq.unfold (fun state -> Some ("TooManySlots", state)) "") 
+            let namesarr =
+                model.namesList.Split([|';';',';'\r';'\n'|]) |> Seq.distinct
+                |> Seq.toArray
+            for i in 0..namesarr.Length - 1 do
+                let idx = namesarr.Length - 1 - i
+                let rIdx = int (Math.floor(Math.random() * (float idx)))
+                let buf = namesarr[idx]
+                namesarr[idx] <- namesarr[rIdx]
+                namesarr[rIdx] <- buf
+            namesarr
+            |> fun s -> Seq.append s (Seq.unfold (fun state -> Some ("TooManySlots", state)) "")
+            
         let res =
             Seq.zip (Seq.concat [ seq [d1]; chunks]) names
             |> Seq.map (fun (chunk, name) -> chunk + name + "\"")
