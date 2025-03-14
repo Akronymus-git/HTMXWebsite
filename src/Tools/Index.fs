@@ -36,7 +36,7 @@ open Elmish
 
 
 let init () =
-    { input = sample
+    { input = ""//sample
       output = ""
       namesList = ""
       priorityNamesList = "" },
