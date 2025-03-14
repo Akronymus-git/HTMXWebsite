@@ -36,7 +36,7 @@ open Elmish
 
 
 let init () =
-    { input = ""//sample
+    { input = sample
       output = ""
       namesList = ""
       priorityNamesList = "" },
@@ -80,7 +80,7 @@ let update msg model =
         let names =
             Seq.concat [seq priorityNames; seq namesarr; (Seq.unfold (fun state -> Some("TooManySlots" + (state.ToString()), state + 1)) 0)]
             |> Seq.distinct
-            |> Seq.take (Seq.length chunks)
+            |> Seq.take (Seq.length chunks - 1)
             |> Seq.toArray
         console.log "names"
         for i in 0 .. names.Length - 1 do 
@@ -91,11 +91,8 @@ let update msg model =
             names[rIdx] <- buf
         console.log "randomized"
         let res =
-            Seq.zip chunks names
+            Seq.zip (chunks |> Seq.rev|> Seq.skip 1|> Seq.rev) names
             |> Seq.map (fun (chunk, name) -> chunk + name + "\"")
-            |> Seq.rev
-            |> Seq.skip 1
-            |> Seq.rev
             |> String.concat ""
             
         console.log "res"
