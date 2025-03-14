@@ -21,6 +21,7 @@
         <Compile Include="NotFound.fs" />
         <Compile Include="IsoGridRandomizer.fs" />
         <Compile Include="Incremental.fs" />
+        <Compile Include="Tools.fs" />
     </ItemGroup>
 
 

@@ -1,11 +1,11 @@
-﻿module Client.Incremental
+﻿module Client.Tools
 open SharedView
 open Giraffe.ViewEngine
 
 
 
 
-let Incremental
+let Tools
     =
     html
         []
@@ -13,7 +13,7 @@ let Incremental
               []
               [ title [] [ Text "Incremental" ]
                 HtmlElements.link [ _rel "stylesheet"; _href "style.css" ]
-                script [ _src "incremental.js"; _type "module" ] [] ]
+                script [ _src "tools.js"; _type "module" ] [] ]
           body
               []
               [ basicLayout

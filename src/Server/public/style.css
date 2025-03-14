@@ -51,3 +51,7 @@ body {
 .hit {
     background-color: #abcdef;
 }
+button {
+    background-color: saddlebrown;
+    color: white;
+}

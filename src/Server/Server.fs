@@ -110,6 +110,7 @@ let webApp =
                  |> int)
                 x)
         get "/rpg" (htmlView Incremental.Incremental)
+        get "/tools" (htmlView Tools.Tools)
         get "" notFoundPipeline
         post "" forbiddenPipeline
         patch "" forbiddenPipeline

@@ -10,4 +10,5 @@ let RandomStuff =
               [ _style "display:flex;flex-direction:column" ]
               [ h1 [] [ Text "This is where my random side projects go" ]
                 a [_href "/murderBingo"] [Text "Murder bingo for DDRJake"]
-                link "/isometricGridRandomizer" "Randomizer for Tytar" ] ]
+                link "/isometricGridRandomizer" "Randomizer for Tytar"
+                link "/tools" "tools"] ]

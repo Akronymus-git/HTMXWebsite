@@ -4,8 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "dotnet fable ../IncrementalGame/IncrementalGame.fsproj -o dist --noCache",
-    "watch": "dotnet fable ../IncrementalGame/IncrementalGame.fsproj -o dist --noCache --watch"
+    "buildG": "dotnet fable ../IncrementalGame/IncrementalGame.fsproj -o distI --noCache",
+    "watchG": "dotnet fable ../IncrementalGame/IncrementalGame.fsproj -o distI --noCache --watch",
+    "buildT": "dotnet fable ../Tools/Tools.fsproj -o distT --noCache",
+    "watchT": "dotnet fable ../Tools/Tools.fsproj -o distT --noCache --watch"
   },
   "author": "",
   "license": "ISC",

@@ -3,10 +3,10 @@ var webpack = require("webpack");
 
 var cfg = {
     devtool: "source-map",
-    entry: "./dist/App.js",
+    entry: {incremental: "./distI/App.js", tools: "./distT/App.js"},
     output: {
         path: path.join(__dirname, "public"),
-        filename: "bundle.js"
+        filename: "[name].js"
     },
     module: {
         rules: [

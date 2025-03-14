@@ -20,4 +20,6 @@ release.sh
 /src/Server/.init
 /src/Server/init.sql
 *bundle.js*
+/src/Server/distI/
+/src/Server/distT/
 /src/Server/dist/
