@@ -53,6 +53,7 @@ let update msg model =
         let names =
             let namesarr =
                 model.namesList.Split([|';';',';'\r';'\n'|]) |> Seq.distinct
+                |> Seq.where (fun x -> x.Length > 0)
                 |> Seq.toArray
             for i in 0..namesarr.Length - 1 do
                 let idx = namesarr.Length - 1 - i
