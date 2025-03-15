@@ -23,12 +23,14 @@ type Model =
     { input: string
       namesList: string
       priorityNamesList: string
-      output: string }
+      output: string
+      cityNames: string }
 
 type Msg =
     | InputChange of string
     | NamesListChanged of string
     | PriorityNamesListChanged of string
+    | CityNamesChanged of string
     | Process
 
 type sav = { Save: SaveGame }
@@ -36,10 +38,11 @@ open Elmish
 
 
 let init () =
-    { input = ""// sample
+    { input = ""+ sample
       output = ""
       namesList = ""
-      priorityNamesList = "" },
+      priorityNamesList = ""
+      cityNames = "" },
     Cmd.Empty
 let randomizeArray (arr: 'a array) =
     for i in 0 .. arr.Length - 1 do 
@@ -53,6 +56,7 @@ let update msg model =
     | InputChange str -> { model with input = str }, Cmd.none
     | NamesListChanged str -> { model with namesList = str }, Cmd.none
     | PriorityNamesListChanged str -> { model with priorityNamesList = str }, Cmd.none
+    | CityNamesChanged str -> { model with cityNames = str }, Cmd.none
     | Process ->
         let data = model.input.Split "\"name\":\""
         let d1 = (Seq.head data) + "\"name\":\""
@@ -101,8 +105,46 @@ let update msg model =
             |> String.concat ""
             
         console.log "res"
-        let result = res + (Seq.last chunks)
-        { model with output = result.Substring(0, result.Length - 8)}, Cmd.none
+        let result =
+            let x = (res + (Seq.last chunks))
+            x.Substring(0, x.Length - 8)
+        let cityNamesArr =
+            model.cityNames.Split([| ';'; ','; '\r'; '\n' |])
+            |> Seq.distinct
+            |> Seq.where (fun x -> x.Length > 0)
+            |> Seq.toArray
+            
+        randomizeArray names
+        let cityData = result.Split "\"n\":\""
+        let cityData1 = (Seq.head cityData) + "\"n\":\""
+        let cityData2 = Seq.tail cityData
+        let cityDatachunks =
+            Seq.map
+                (fun (x: string) ->
+                    Seq.skipWhile (fun y -> y <> '\"') x
+                    |> Seq.skip 1
+                    |> Seq.toArray
+                    |> Seq.map (fun c -> $"{c}")
+                    |> String.concat "")
+                cityData2
+            |> Seq.map (fun x -> x + "\"n\":\"")
+            |> Seq.append [cityData1]
+        let citynames =
+            Seq.concat [seq cityNamesArr; (Seq.unfold (fun state -> Some("TooManyCities" + (state.ToString()), state + 1)) 0)]
+            |> Seq.distinct
+            |> Seq.take (Seq.length cityDatachunks - 1)
+            |> Seq.toArray
+        randomizeArray citynames
+
+
+        let res2 =
+            Seq.zip (cityDatachunks |> Seq.rev|> Seq.skip 1|> Seq.rev) citynames
+            |> Seq.map (fun (chunk, name) -> chunk + name + "\"")
+            |> String.concat ""
+        let result2 =
+            let x = (res2 + (Seq.last cityDatachunks))
+            x.Substring(0, x.Length - 5)
+        { model with output = result2}, Cmd.none
 
 let view (model: Model) dispatch =
     Html.div
@@ -142,6 +184,15 @@ let view (model: Model) dispatch =
                                 [ prop.type' "text"
                                   prop.onChange (fun (x: string) -> dispatch (Msg.PriorityNamesListChanged x))
                                   prop.value model.priorityNamesList
+                                  prop.style [ style.color "black" ] ] ] ]
+                Html.div
+                    [ prop.style [ style.display.flex; style.flexDirection.column ]
+                      prop.children
+                          [ Html.text "city Names"
+                            Html.textarea
+                                [ prop.type' "text"
+                                  prop.onChange (fun (x: string) -> dispatch (Msg.CityNamesChanged x))
+                                  prop.value model.cityNames
                                   prop.style [ style.color "black" ] ] ] ]     
                 Html.button [ prop.onClick (fun _ -> dispatch Msg.Process); prop.text "Process" ]
                 Html.textarea [
