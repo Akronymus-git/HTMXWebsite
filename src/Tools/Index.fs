@@ -38,7 +38,7 @@ open Elmish
 
 
 let init () =
-    { input = ""+ sample
+    { input = "" //+ sample
       output = ""
       namesList = ""
       priorityNamesList = ""
@@ -114,7 +114,7 @@ let update msg model =
             |> Seq.where (fun x -> x.Length > 0)
             |> Seq.toArray
             
-        randomizeArray names
+        randomizeArray cityNamesArr
         let cityData = result.Split "\"n\":\""
         let cityData1 = (Seq.head cityData) + "\"n\":\""
         let cityData2 = Seq.tail cityData
