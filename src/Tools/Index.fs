@@ -41,7 +41,13 @@ let init () =
       namesList = ""
       priorityNamesList = "" },
     Cmd.Empty
-
+let randomizeArray (arr: 'a array) =
+    for i in 0 .. arr.Length - 1 do 
+            let idx = arr.Length - 1 - i
+            let rIdx = int (Math.floor (Math.random () * (float idx)))
+            let buf = arr[idx]
+            arr[idx] <- arr[rIdx]
+            arr[rIdx] <- buf
 let update msg model =
     match msg with
     | InputChange str -> { model with input = str }, Cmd.none
@@ -70,6 +76,7 @@ let update msg model =
             |> Seq.distinct
             |> Seq.where (fun x -> x.Length > 0)
             |> Seq.toArray
+        
         console.log "namesarr"
         let priorityNames =
             model.priorityNamesList.Split([| ';'; ','; '\r'; '\n' |])
@@ -77,18 +84,16 @@ let update msg model =
             |> Seq.where (fun x -> x.Length > 0)
             |> Seq.toArray
         console.log "priority"
+        randomizeArray namesarr
+        randomizeArray priorityNames
         let names =
             Seq.concat [seq priorityNames; seq namesarr; (Seq.unfold (fun state -> Some("TooManySlots" + (state.ToString()), state + 1)) 0)]
             |> Seq.distinct
             |> Seq.take (Seq.length chunks - 1)
             |> Seq.toArray
+        randomizeArray names
         console.log "names"
-        for i in 0 .. names.Length - 1 do 
-            let idx = names.Length - 1 - i
-            let rIdx = int (Math.floor (Math.random () * (float idx)))
-            let buf = names[idx]
-            names[idx] <- names[rIdx]
-            names[rIdx] <- buf
+        
         console.log "randomized"
         let res =
             Seq.zip (chunks |> Seq.rev|> Seq.skip 1|> Seq.rev) names
