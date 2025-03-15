@@ -11,7 +11,7 @@ let Tools
         []
         [ head
               []
-              [ title [] [ Text "Incremental" ]
+              [ title [] [ Text "Age of conflict save game names list editor" ]
                 HtmlElements.link [ _rel "stylesheet"; _href "style.css" ]
                 script [ _src "tools.js"; _type "module" ] [] ]
           body
