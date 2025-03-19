@@ -76,14 +76,14 @@ let update msg model =
 
 
         let namesarr =
-            model.namesList.Split([| ';'; ','; '\r'; '\n' |])
+            model.namesList.Split([| ';'; '\r'; '\n' |])
             |> Seq.distinct
             |> Seq.where (fun x -> x.Length > 0)
             |> Seq.toArray
         
         console.log "namesarr"
         let priorityNames =
-            model.priorityNamesList.Split([| ';'; ','; '\r'; '\n' |])
+            model.priorityNamesList.Split([| ';'; '\r'; '\n' |])
             |> Seq.distinct
             |> Seq.where (fun x -> x.Length > 0)
             |> Seq.toArray
@@ -109,7 +109,7 @@ let update msg model =
             let x = (res + (Seq.last chunks))
             x.Substring(0, x.Length - 8)
         let cityNamesArr =
-            model.cityNames.Split([| ';'; ','; '\r'; '\n' |])
+            model.cityNames.Split([| ';';  '\r'; '\n' |])
             |> Seq.distinct
             |> Seq.where (fun x -> x.Length > 0)
             |> Seq.toArray
