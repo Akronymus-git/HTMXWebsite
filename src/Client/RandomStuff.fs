@@ -2,6 +2,7 @@
 
 open Giraffe.ViewEngine
 let link = SharedView.link
+let linkNoBoost = SharedView.linkUnboosted
 
 let RandomStuff =
     SharedView.basicPage
@@ -11,4 +12,4 @@ let RandomStuff =
               [ h1 [] [ Text "This is where my random side projects go" ]
                 a [_href "/murderBingo"] [Text "Murder bingo for DDRJake"]
                 link "/isometricGridRandomizer" "Randomizer for Tytar"
-                link "/tools" "tools"] ]
+                linkNoBoost "/tools" "tools"] ]

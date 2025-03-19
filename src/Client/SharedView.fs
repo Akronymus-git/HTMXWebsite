@@ -8,6 +8,8 @@ open Giraffe.ViewEngine.Htmx
 let link path name =
     a [ _href path; _hxBoost; _hxTarget "[style=\"grid-area:main\"]" ] [ Text name ]
 
+let linkUnboosted path name =
+    a [ _href path;  ] [ Text name ]
 let basicLayout = div [ _id "pagelayout" ]
 
 let basicNavbar =
