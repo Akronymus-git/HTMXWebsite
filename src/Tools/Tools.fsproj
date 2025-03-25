@@ -40,8 +40,4 @@
         <PackageReference Include="SAFE.Client" Version="5.1.0" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Content Include="sample.json" />
-    </ItemGroup>
-
 </Project>
