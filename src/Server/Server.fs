@@ -17,42 +17,6 @@ open System.Collections.Generic
 open Server.AdminPipeline
 open Giraffe.Htmx
 open Client.MurderBingo
-[<Literal>]
-let sqlConnection = "Data Source=data.db"
-let getQuery (func: SqliteCommand -> unit) (parseRow: SqliteDataReader -> 'a) =
-    use conn = new SqliteConnection(sqlConnection)
-    conn.Open()
-    use command = conn.CreateCommand()
-    func command
-    use reader = command.ExecuteReader()
-    let res = new List<'a>()
-    while reader.Read() do
-        res.Add(parseRow reader)
-    res
-    
-let checkIfTokenExists token =
-    let f (x:SqliteCommand) =
-        x.CommandText <- """Select true from tokens where token = $token"""
-        x.Parameters.AddWithValue("$token", token) |> ignore
-    let read (x: SqliteDataReader) =
-        x.GetBoolean(0)
-    getQuery f read |> Seq.length |> (<>) 0
-
-let murderBingoRouter =
-    let decider: HttpHandler =
-        fun (f: HttpFunc) (ctx: HttpContext) ->
-            let cookie = ctx.GetCookieValue "auth"
-    
-            match cookie with
-            | None -> htmlString "" f ctx
-            | Some x ->
-                match checkIfTokenExists x with
-                | true -> htmlString "auth" f ctx
-                | _ -> htmlString "not auth" f ctx
-    
-    
-    router { get "" (htmlString murderbingo) }
-
 
 let viewWithContext (stuff: bool -> XmlNode) f (ctx:HttpContext) =
     
@@ -77,33 +41,12 @@ let notFoundPipeline =
     }
 
 let forbiddenPipeline = pipeline { set_status_code 403 }
-let adminRouter: HttpHandler =
-     fun func ctx ->
-         match ctx.GetCookieValue "auth" with
-         | None -> forbiddenPipeline func ctx
-         | Some auth ->
-             let comm (c:SqliteCommand) =
-                 c.CommandText <- """
-select 1 from Tokens 
-inner join TokenRoles on Tokens.tokenId = TokenRoles.tokenId  
-inner join Roles on TokenRoles.roleId = Roles.roleId 
-where Tokens.token = $token and Roles.roleId = 0"""
-                 c.Parameters.AddWithValue("$token", auth) |> ignore
-             let parse (x: SqliteDataReader) =
-                 x.GetBoolean 0
-             let res = (getQuery comm parse).Count > 0
-             match res with
-             | false -> forbiddenPipeline func ctx
-             | true -> AuthorizedAdminPipeline func ctx
-    
 let webApp =
     router {
+        get "/discord" (redirectTo true "https://discord.gg/yK4WsfV5zy")
         get "/" (viewWithContext Index)
         get "/about" (viewWithContext About)
         get "/randomStuff" (viewWithContext RandomStuff)
-        get "/admin" adminRouter
-        forward "/murderBingo" murderBingoRouter
-
         forward "/isometricGridRandomizer" (fun x ->
             gridRandomizerMiddleware
                 ((DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() % (Int32.MaxValue |> int64))

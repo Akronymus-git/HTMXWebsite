@@ -44,6 +44,5 @@ Dev Setup:
 ```bash
 cd src/Server
 dotnet run
-npm run watch
-webpack --config webpack.config.js --mode development --watch
+npm run watchG & npm run watchT & webpack --config webpack.config.js --mode development --watch
 ```

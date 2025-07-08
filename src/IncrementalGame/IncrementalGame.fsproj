@@ -31,7 +31,6 @@
 
     <ItemGroup>
       <Compile Include="Storage.fs" />
-      <Compile Include="ItemsList.fs" />
       <Compile Include="Index.fs" />
       <Compile Include="App.fs" />
     </ItemGroup>

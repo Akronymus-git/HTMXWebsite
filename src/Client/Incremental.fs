@@ -13,6 +13,7 @@ let Incremental
               []
               [ title [] [ Text "Incremental" ]
                 HtmlElements.link [ _rel "stylesheet"; _href "style.css" ]
+                HtmlElements.link [ _rel "stylesheet"; _href "styleInc.css" ]
                 script [ _src "incremental.js"; _type "module" ] [] ]
           body
               []

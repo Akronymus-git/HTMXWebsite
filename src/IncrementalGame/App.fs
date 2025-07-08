@@ -12,7 +12,7 @@ let timer onTick model =
         let intervalId = 
             JS.setInterval
                 (fun _ -> dispatch (onTick DateTime.Now))
-                model.TickDelay
+                500
         { new IDisposable with
             member _.Dispose() = JS.clearInterval intervalId }
     start

@@ -2,7 +2,7 @@
 
 open SharedView
 open Giraffe.ViewEngine
-let link = SharedView.link
+let link = SharedView.linkBoosted
 let NotFound =
     basicPage
         "Not found"

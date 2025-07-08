@@ -5,10 +5,12 @@
     <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="DBAccess.fs" />
     <Compile Include="AdminPipeline.fs" />
     <Compile Include="Server.fs" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Dapper.FSharp" Version="4.9.0" />
     <PackageReference Include="Giraffe.Htmx" Version="2.0.0" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.7" />
     <PackageReference Include="Saturn" Version="0.16.1" />
@@ -20,6 +22,7 @@
   <ItemGroup>
     <Content Include="public\style.css" />
     <Content Include="public\favicon.ico" />
+    <Content Include="public\styleInc.css" />
     <Content Include="webpack.config.js" />
   </ItemGroup>
   <ItemGroup>

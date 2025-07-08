@@ -14,7 +14,6 @@ body {
     flex-direction:row;
     background-color: #393752;
     gap: 20px;
-    
     height: 50px;
     align-items: center;
     justify-content: center;
@@ -33,9 +32,9 @@ body {
 #pagelayout {
     display:grid;
     grid-template-areas: 
-            "navbar navbar" 
-            "sidebar main";
-    grid-template-columns: max-content auto;
+            "navbar" 
+            "main";
+    grid-template-columns: 100%;
     width:100%;
 }
 
