@@ -53,8 +53,8 @@ let murderbingo = """<!-- Thanks to:
 </html>
 <script>
 const list = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
-const width = 7
-const height = 7
+const width = 5
+const height = 5
 const title = "Starsector MurderBingo"
 const freespace = {"text":"Your Name OR DDRJake","description":"","placement":"CENTER"}
 const saveload = true
