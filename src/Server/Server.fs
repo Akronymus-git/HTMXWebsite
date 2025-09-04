@@ -52,6 +52,7 @@ let webApp =
                 ((DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() % (Int32.MaxValue |> int64))
                  |> int)
                 x)
+        get "/murderBingo" (htmlString murderbingo)
         get "/rpg" (htmlView Incremental.Incremental)
         get "/tools" (htmlView Tools.Tools)
         get "" notFoundPipeline
