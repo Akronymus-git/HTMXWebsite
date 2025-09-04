@@ -52,11 +52,11 @@ let murderbingo = """<!-- Thanks to:
   </body>
 </html>
 <script>
-const list = ["Bro killed by Bandit/Nomad","Bro swallowed whole by Nachzehrer","Bro becomes undead","Bro killed by Unhold","Bro killed by Goblin","Bro killed by Orc","Bro killed by Barbarian","Bro killed by Necrosavant","Bro killed by Friendly Fire","Bro killed by Direwolf","Bro killed by Hyena","Bro bleeds out","Bro killed by Webknecht","Bro killed by Alp","Bro killed by Serpent","Bro deserts company","Bro beheaded","Bro gets brain damage","Bro loses eye","Bro loses ear","Bro loses nose","Bro loses finger","4+ fall in one battle","8+ fall in one battle","Total Party Wipe","We raid a caravan","We take an enemy camp","We raid peasants","Have 10K Crowns","Get a Famed weapon","Get a Famed bodyarmour","Bro reaches lv.8","One-shot Multikill","Our dog dies","Our dog kills","Have 2 retinues","Bro reaches lv.11","Kill an Unhold","Kill a Necrosavant","Kill a Hexen","Kill a Lindwurm","Kill an Alp","Kill a Schrat","Have a 250+ head armour piece","Have a 250+ body armour piece","Kill an Orc Warlord","Kill a Necromancer","Defeat another Mercenary Company","Get Famed Helmet","Get Famed Shield","Complete a 3-skull contract","Kill a Barbarian King","Win against 20 enemies","Win against 30 enemies","Win an arena fight"]
+const list = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
 const width = 7
 const height = 7
-const title = "Battle Brothers Bingo"
-const freespace = {"text":"A Bro Dies (FREE SPACE)","description":"","placement":"CENTER"}
+const title = "Starsector MurderBingo"
+const freespace = {"text":"Your Name OR DDRJake","description":"","placement":"CENTER"}
 const saveload = true
 
 document.title = title
