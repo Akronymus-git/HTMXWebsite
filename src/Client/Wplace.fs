@@ -1,19 +1,18 @@
-﻿module Client.Tools
-
+﻿module Client.Wplace
 open SharedView
 open Giraffe.ViewEngine
 
 
 
 
-let Tools =
+let Wplace =
     html
         []
         [ head
               []
-              [ title [] [ Text "Age of conflict save game names list editor" ]
+              [ title [] [ Text "Wplace image converter" ]
                 HtmlElements.link [ _rel "stylesheet"; _href "style.css" ]
-                script [ _src "tools.js"; _type "module" ] [] ]
+                script [ _src "wplace.js"; _type "module" ] [] ]
           body
               []
               [ basicLayout

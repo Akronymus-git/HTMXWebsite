@@ -23,6 +23,7 @@ release.sh
 /src/Server/distI/
 /src/Server/distT/
 /src/Server/dist/
+/src/Server/distW/
 *.js.map
 /src/Server/public/incremental.js
 /src/Server/public/tools.js

@@ -30,5 +30,7 @@
     <_ContentIncludedByDefault Remove="dist\fable_modules\project_cracked.json" />
     <_ContentIncludedByDefault Remove="fable_modules\fable-library-js.4.24.0\package.json" />
     <_ContentIncludedByDefault Remove="fable_modules\project_cracked.json" />
+    <_ContentIncludedByDefault Remove="distI\fable_modules\fable-library-js.4.24.0\package.json" />
+    <_ContentIncludedByDefault Remove="distW\fable_modules\fable-library-js.4.24.0\package.json" />
   </ItemGroup>
 </Project>

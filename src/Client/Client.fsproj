@@ -22,6 +22,7 @@
         <Compile Include="IsoGridRandomizer.fs" />
         <Compile Include="Incremental.fs" />
         <Compile Include="Tools.fs" />
+        <Compile Include="Wplace.fs" />
     </ItemGroup>
 
 

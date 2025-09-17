@@ -55,6 +55,8 @@ let webApp =
         get "/murderBingo" (htmlString murderbingo)
         get "/rpg" (htmlView Incremental.Incremental)
         get "/tools" (htmlView Tools.Tools)
+        get "/wplace" (htmlView Wplace.Wplace)
+        get "/Wplace" (htmlView Wplace.Wplace)
         get "" notFoundPipeline
         post "" forbiddenPipeline
         patch "" forbiddenPipeline
