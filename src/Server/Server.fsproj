@@ -24,6 +24,9 @@
     <Content Include="public\favicon.ico" />
     <Content Include="public\styleInc.css" />
     <Content Include="webpack.config.js" />
+    <Content Remove="distW\**" />
+    <Content Remove="distT\**" />
+    <Content Remove="distI\**" />
   </ItemGroup>
   <ItemGroup>
     <_ContentIncludedByDefault Remove="dist\fable_modules\fable-library-js.4.24.0\package.json" />
@@ -32,5 +35,11 @@
     <_ContentIncludedByDefault Remove="fable_modules\project_cracked.json" />
     <_ContentIncludedByDefault Remove="distI\fable_modules\fable-library-js.4.24.0\package.json" />
     <_ContentIncludedByDefault Remove="distW\fable_modules\fable-library-js.4.24.0\package.json" />
+    <_ContentIncludedByDefault Remove="distT\fable_modules\fable-library-js.4.24.0\package.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Remove="distW\**" />
+    <EmbeddedResource Remove="distT\**" />
+    <EmbeddedResource Remove="distI\**" />
   </ItemGroup>
 </Project>

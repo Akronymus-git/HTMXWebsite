@@ -1,14 +1,16 @@
 ﻿module Index
 
+open System.Text
 open Browser
 open Browser.Types
 open Fable.Core
-open Fable.Import.Browser
+open Browser
 open Feliz
 open Feliz.style
 open Feliz
 open Fable.Core.JsInterop
 open Fable.Core.JS
+open Browser.Blob
 open Microsoft.FSharp.Collections
 open Fable.Core.Extensions
 
@@ -28,9 +30,12 @@ type Model =
 type Msg =
     | InitCanvas
     | HandleFileUploaded of Blob * string * string
-    | HandleFileUploadedURL of string
+    | HandleFileUploadedURL of byte[]
 
 open Elmish
+
+[<Emit("btoa($0)")>]
+let toBase64String (bytes: byte[]) : string = failwith "JS"
 
 
 let init () =
@@ -49,35 +54,60 @@ let handleFileEvent onReadArrayBuffer onReadDataURL (fileEvent: Browser.Types.Ev
         reader.onload <- (fun _ -> reader.result |> unbox |> (fun x -> onReadArrayBuffer (x, name, ``type``)))
         reader.readAsArrayBuffer (files.[0])
         let reader2 = Browser.Dom.FileReader.Create()
-        reader2.onload <- (fun _ -> reader.result |> unbox |> onReadDataURL)
+        
+        reader2.onload <-
+            (fun e ->
+                e.target?result
+                |> unbox
+                |> onReadDataURL)
+
         reader2.readAsDataURL (files.[0])
 
+type ShadowDomInit (Mode: EncapsulationMode, delegateFocus: bool) =
+    let mutable delFocus = delegateFocus
+    let mutable currMode = Mode
+    interface ShadowRootInit with
+        member val delegatesFocus = delFocus with get, set
+        member this.mode = currMode
+        member this.mode with set value = currMode <- value
 
 let update msg (model: Model) =
     match msg with
     | InitCanvas ->
         match model.SourceCanvas with
-        | Some _  -> model, Cmd.none
+        | Some _ -> model, Cmd.none
         | None ->
             let sourceCanvas = document.getElementById ("sourceImage") :?> HTMLCanvasElement
-            console.log sourceCanvas
-            sourceCanvas.width <- 100
-            sourceCanvas.height <- 100
-            let ctx = sourceCanvas.getContext_2d ()
+            
+            console.log sourceCanvas 
             let img = document.createElement "img" :?> HTMLImageElement
+            img.id <- "srcImgHolder"  
+
+            sourceCanvas.parentElement.appendChild (img) |> ignore
             match model.Image with
             | None -> ()
             | Some i ->
                 match i.DataUrl with
-                | Some x -> 
+                | Some x ->
                     img.src <- x
                 | None -> ()
-            ctx.drawImage (!^img, 0,0)
-            ctx.moveTo (50,50)
-            ctx.lineWidth <- 3
-            ctx.strokeStyle <- (!^"red")
-            ctx.lineTo (75,75)
+
+            console.log img.width
+            sourceCanvas.width <- 100 
+            sourceCanvas.height <- 100
+            let ctx = sourceCanvas.getContext_2d ()
+            ctx.fillStyle <- (!^ "red")
+            ctx.fillRect (0,0,100,100)
+            console.log img
+            ctx.drawImage (!^img, 0, 0,200, 200, 0,0,100,100)
+            ctx.moveTo (50, 50)
+            
+            ctx.lineWidth <- 50
+            ctx.strokeStyle <- (!^ "blue")
+            ctx.lineTo (75, 75)
+            ctx.stroke ()
             { model with SourceCanvas = Some ctx }, Cmd.none
+            
     | HandleFileUploaded(blob, filename, ``type``) ->
         { model with
             Name = filename
@@ -87,9 +117,14 @@ let update msg (model: Model) =
                       Type = ``type``
                       Name = filename
                       DataUrl = None } },
-        Cmd.ofMsg InitCanvas
+        Cmd.none
     | HandleFileUploadedURL str ->
-        {model with Image = match model.Image with | Some x -> Some {x with DataUrl = Some str } | None -> None }, Cmd.ofMsg InitCanvas
+        { model with
+            Image =
+                match model.Image with
+                | Some x -> Some { x with DataUrl = Some ((new StringBuilder()).Append(str).ToString()) }
+                | None -> None },
+        Cmd.ofMsg InitCanvas
 
 
 let view (model: Model) dispatch =
@@ -109,6 +144,8 @@ let view (model: Model) dispatch =
                     Html.input
                         [ prop.type' "file"
                           prop.label "choose an image"
-                          prop.onChange (handleFileEvent (HandleFileUploaded >> dispatch) (HandleFileUploadedURL >> dispatch)) ]
+                          prop.onChange (
+                              handleFileEvent (HandleFileUploaded >> dispatch) (HandleFileUploadedURL >> dispatch)
+                          ) ]
 
                 ] ]
