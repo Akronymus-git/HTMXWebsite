@@ -30,7 +30,7 @@ type Model =
 type Msg =
     | InitCanvas
     | HandleFileUploaded of Blob * string * string
-    | HandleFileUploadedURL of byte[]
+    | HandleFileUploadedURL of string
 
 open Elmish
 
@@ -74,40 +74,17 @@ type ShadowDomInit (Mode: EncapsulationMode, delegateFocus: bool) =
 let update msg (model: Model) =
     match msg with
     | InitCanvas ->
+        console.log "initcanvas"
         match model.SourceCanvas with
         | Some _ -> model, Cmd.none
         | None ->
-            let sourceCanvas = document.getElementById ("sourceImage") :?> HTMLCanvasElement
-            
-            console.log sourceCanvas 
-            let img = document.createElement "img" :?> HTMLImageElement
-            img.id <- "srcImgHolder"  
-
-            sourceCanvas.parentElement.appendChild (img) |> ignore
-            match model.Image with
-            | None -> ()
-            | Some i ->
-                match i.DataUrl with
-                | Some x ->
-                    img.src <- x
-                | None -> ()
-
-            console.log img.width
-            sourceCanvas.width <- 100 
-            sourceCanvas.height <- 100
+            let sourceCanvas = document.getElementById ("targetImage") :?> HTMLCanvasElement
+            let img = document.getElementById "sourceImage" :?> HTMLImageElement
+            sourceCanvas.width <- img.width 
+            sourceCanvas.height <- img.height
             let ctx = sourceCanvas.getContext_2d ()
-            ctx.fillStyle <- (!^ "red")
-            ctx.fillRect (0,0,100,100)
-            console.log img
-            ctx.drawImage (!^img, 0, 0,200, 200, 0,0,100,100)
-            ctx.moveTo (50, 50)
-            
-            ctx.lineWidth <- 50
-            ctx.strokeStyle <- (!^ "blue")
-            ctx.lineTo (75, 75)
-            ctx.stroke ()
+            ctx.drawImage (!^img, 0, 0,img.width, img.height, 0,0,sourceCanvas.width,sourceCanvas.height)
             { model with SourceCanvas = Some ctx }, Cmd.none
-            
     | HandleFileUploaded(blob, filename, ``type``) ->
         { model with
             Name = filename
@@ -119,20 +96,29 @@ let update msg (model: Model) =
                       DataUrl = None } },
         Cmd.none
     | HandleFileUploadedURL str ->
+        let img = document.getElementById "sourceImage" :?> HTMLImageElement
+        img.src <- str
         { model with
             Image =
                 match model.Image with
                 | Some x -> Some { x with DataUrl = Some ((new StringBuilder()).Append(str).ToString()) }
                 | None -> None },
-        Cmd.ofMsg InitCanvas
+        Cmd.none
 
 
 let view (model: Model) dispatch =
     Html.div
         [ prop.children
               [ Html.text "Wplace image converter"
+                Html.img [
+                    prop.id "sourceImage"
+                    prop.onLoad (fun (_:Event) -> InitCanvas |> dispatch)
+                    prop.style [
+                        style.display.none
+                    ]
+                ]
                 Html.canvas
-                    [ prop.id "sourceImage"
+                    [ prop.id "targetImage"
                       prop.style (
                           match model.Image with
                           | Some _ -> []
