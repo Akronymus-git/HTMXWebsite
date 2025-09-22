@@ -83,7 +83,18 @@ let update msg (model: Model) =
             sourceCanvas.width <- img.width 
             sourceCanvas.height <- img.height
             let ctx = sourceCanvas.getContext_2d ()
+            
             ctx.drawImage (!^img, 0, 0,img.width, img.height, 0,0,sourceCanvas.width,sourceCanvas.height)
+            let data = ctx.getImageData (0,0,sourceCanvas.width, sourceCanvas.height)
+            console.log data.data
+            for x in 0..4..(int)data.data.Length - 4 do
+                let y = data.data[x]
+                data.data[x] <-  data.data[x+1]
+                data.data[x+1] <- data.data[x+2] 
+                data.data[x+2] <- y 
+            console.log data.data
+            ctx.clearRect (0,0, sourceCanvas.width, sourceCanvas.height)
+            ctx.putImageData (data,0,0,0,0,sourceCanvas.width, sourceCanvas.height)
             { model with SourceCanvas = Some ctx }, Cmd.none
     | HandleFileUploaded(blob, filename, ``type``) ->
         { model with
