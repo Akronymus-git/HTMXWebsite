@@ -25,23 +25,24 @@ type Image =
 type Model =
     { Name: string
       Image: Option<Image>
-      SourceCanvas: CanvasRenderingContext2D option }
+      SourceCanvas: CanvasRenderingContext2D option
+      Layers: HTMLCanvasElement list }
 
 type Msg =
     | InitCanvas
+    | AddLayer
+    | DeleteLayer of int
     | HandleFileUploaded of Blob * string * string
     | HandleFileUploadedURL of string
 
 open Elmish
 
-[<Emit("btoa($0)")>]
-let toBase64String (bytes: byte[]) : string = failwith "JS"
-
 
 let init () =
     { Name = ""
       Image = None
-      SourceCanvas = None },
+      SourceCanvas = None
+      Layers = [] },
     Cmd.none
 
 let handleFileEvent onReadArrayBuffer onReadDataURL (fileEvent: Browser.Types.Event) =
@@ -54,47 +55,27 @@ let handleFileEvent onReadArrayBuffer onReadDataURL (fileEvent: Browser.Types.Ev
         reader.onload <- (fun _ -> reader.result |> unbox |> (fun x -> onReadArrayBuffer (x, name, ``type``)))
         reader.readAsArrayBuffer (files.[0])
         let reader2 = Browser.Dom.FileReader.Create()
-        
-        reader2.onload <-
-            (fun e ->
-                e.target?result
-                |> unbox
-                |> onReadDataURL)
+
+        reader2.onload <- (fun e -> e.target?result |> unbox |> onReadDataURL)
 
         reader2.readAsDataURL (files.[0])
 
-type ShadowDomInit (Mode: EncapsulationMode, delegateFocus: bool) =
-    let mutable delFocus = delegateFocus
-    let mutable currMode = Mode
-    interface ShadowRootInit with
-        member val delegatesFocus = delFocus with get, set
-        member this.mode = currMode
-        member this.mode with set value = currMode <- value
+
 
 let update msg (model: Model) =
     match msg with
     | InitCanvas ->
         console.log "initcanvas"
+
         match model.SourceCanvas with
         | Some _ -> model, Cmd.none
         | None ->
             let sourceCanvas = document.getElementById ("targetImage") :?> HTMLCanvasElement
             let img = document.getElementById "sourceImage" :?> HTMLImageElement
-            sourceCanvas.width <- img.width 
+            sourceCanvas.width <- img.width
             sourceCanvas.height <- img.height
             let ctx = sourceCanvas.getContext_2d ()
-            
-            ctx.drawImage (!^img, 0, 0,img.width, img.height, 0,0,sourceCanvas.width,sourceCanvas.height)
-            let data = ctx.getImageData (0,0,sourceCanvas.width, sourceCanvas.height)
-            console.log data.data
-            for x in 0..4..(int)data.data.Length - 4 do
-                let y = data.data[x]
-                data.data[x] <-  data.data[x+1]
-                data.data[x+1] <- data.data[x+2] 
-                data.data[x+2] <- y 
-            console.log data.data
-            ctx.clearRect (0,0, sourceCanvas.width, sourceCanvas.height)
-            ctx.putImageData (data,0,0,0,0,sourceCanvas.width, sourceCanvas.height)
+            ctx.drawImage (!^img, 0, 0, img.width, img.height, 0, 0, sourceCanvas.width, sourceCanvas.height)
             { model with SourceCanvas = Some ctx }, Cmd.none
     | HandleFileUploaded(blob, filename, ``type``) ->
         { model with
@@ -109,25 +90,39 @@ let update msg (model: Model) =
     | HandleFileUploadedURL str ->
         let img = document.getElementById "sourceImage" :?> HTMLImageElement
         img.src <- str
+
         { model with
             Image =
                 match model.Image with
-                | Some x -> Some { x with DataUrl = Some ((new StringBuilder()).Append(str).ToString()) }
+                | Some x ->
+                    Some
+                        { x with
+                            DataUrl = Some((new StringBuilder()).Append(str).ToString()) }
                 | None -> None },
         Cmd.none
+    | AddLayer ->
+        let newLayer = document.createElement "canvas" :?> HTMLCanvasElement
+        
+        { model with
+            Layers = (newLayer :: model.Layers) },
+        Cmd.none
+    | DeleteLayer i ->
+        let newLayers =
+            List.mapi (fun idx elem -> (idx, elem)) model.Layers
+            |> List.choose (fun x -> if fst x <> i then Some (snd x) else None )
+        { model with Layers = newLayers }, Cmd.none
 
 
 let view (model: Model) dispatch =
     Html.div
         [ prop.children
               [ Html.text "Wplace image converter"
-                Html.img [
-                    prop.id "sourceImage"
-                    prop.onLoad (fun (_:Event) -> InitCanvas |> dispatch)
-                    prop.style [
-                        style.display.none
-                    ]
-                ]
+                for elem in model.Layers do
+                    Feliz.React.useElementRef elem
+                Html.img
+                    [ prop.id "sourceImage"
+                      prop.onLoad (fun (_: Event) -> InitCanvas |> dispatch)
+                      prop.style [ style.display.none ] ]
                 Html.canvas
                     [ prop.id "targetImage"
                       prop.style (
@@ -143,6 +138,4 @@ let view (model: Model) dispatch =
                           prop.label "choose an image"
                           prop.onChange (
                               handleFileEvent (HandleFileUploaded >> dispatch) (HandleFileUploadedURL >> dispatch)
-                          ) ]
-
-                ] ]
+                          ) ] ] ]
