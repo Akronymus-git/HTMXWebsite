@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <RootNamespace>Shared</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Include="Logging.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Dapper.FSharp" Version="4.9.0" />
+      <PackageReference Include="Giraffe.Htmx" Version="2.0.0" />
+      <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.0" />
+      <PackageReference Include="Saturn" Version="0.16.1" />
+    </ItemGroup>
+
+</Project>

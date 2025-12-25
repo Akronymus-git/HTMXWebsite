@@ -26,7 +26,8 @@ type Model =
     { Name: string
       Image: Option<Image>
       SourceCanvas: CanvasRenderingContext2D option
-      Layers: (CanvasRenderingContext2D * bool) list }
+      Layers: (CanvasRenderingContext2D * bool) list
+      CurrentLayer: int }
 
 type Msg =
     | InitCanvas
@@ -35,9 +36,11 @@ type Msg =
     | HandleFileUploaded of Blob * string * string
     | HandleFileUploadedURL of string
     | ProcessImage
+
 let insertlog x =
     console.log x
     x
+
 let validColors =
     [ "#9c8431"
       "#000000"
@@ -109,10 +112,11 @@ let validColors =
     |> fun x ->
         console.log x
         x
-    |> List.map (fun (x:string) -> Seq.chunkBySize 2 x |> Seq.toList |> List.map (fun (y: char array) -> Seq.map string y |> Seq.fold (+) "" |> fun i -> parseInt i 16 |> uint8))
-    |> fun x ->
-        console.log x
-        x
+    |> List.map (fun (x: string) ->
+        Seq.chunkBySize 2 x
+        |> Seq.toList
+        |> List.map (fun (y: char array) -> Seq.map string y |> Seq.fold (+) "" |> (fun i -> parseInt i 16)))
+    |> List.map (fun x -> x[0],x[1],x[2])
 
 
 open Elmish
@@ -122,7 +126,8 @@ let init () =
     { Name = ""
       Image = None
       SourceCanvas = None
-      Layers = [] },
+      Layers = []
+      CurrentLayer = 0 },
     Cmd.none
 
 let handleFileEvent onReadArrayBuffer onReadDataURL (fileEvent: Browser.Types.Event) =
@@ -212,34 +217,24 @@ let update msg (model: Model) =
             let data = src.data
 
             for idx in 0..4 .. data.Length - 4 do
-                let mutable closestMatch = 2.0**30
-                let mutable cRed = (uint8) 0
-                let mutable cBlue = (uint8) 0
-                let mutable cGreen = (uint8) 0
-                let exponent = 1.5
-                for color in validColors do
 
-                    let difference =
-                        (Math.pow (exponent,(Math.abs ((float)(color[0] - data[idx]))))
-                        + Math.pow (exponent,(Math.abs ((float)(color[1] - data[idx+1]))))
-                        + Math.pow (exponent,(Math.abs ((float)(color[2] - data[idx+2])))))
-
-                    if difference <= closestMatch then
-                        closestMatch <- difference
-                        cRed <- color[0]
-                        cBlue <- color[1]
-                        cGreen <- color[2]
-                if (idx > 990 && idx < 1000) then
-                    console.log cRed
-                    console.log cBlue
-                    console.log cGreen
-                data[idx] <- cRed
-                data[idx + 1] <- cBlue
-                data[idx + 2] <- cGreen
+                
+                //https://www.compuphase.com/cmetric.htm
+                let colorComparator (r1,g1,b1) (r2,g2,b2) =
+                    let rmean = r1 + r2 / 2
+                    let r = r1 - r2
+                    let g = g1 - g2
+                    let b = b1 - b2
+                    Math.sqrt ((float)((((512 + rmean) * r * r) / 256) + 4 * g * g + ((767 - rmean) * b * b ) / 256)) 
+                
+                let (tr,tb,tg) = List.minBy (colorComparator ((int)data[idx],(int)data[idx + 1],(int)data[idx + 2])) validColors
+                data[idx] <- (uint8)tr
+                data[idx + 1] <- (uint8)tg
+                data[idx + 2] <- (uint8)tb
 
             let lay = fst h
             lay.clearRect (0, 0, source.canvas.width, source.canvas.height)
-            lay.putImageData (src, 0, 0,0,0,src.width, src.height)
+            lay.putImageData (src, 0, 0, 0, 0, src.width, src.height)
             ()
         | _ -> ()
 
@@ -252,9 +247,16 @@ let view (model: Model) dispatch =
               [ Html.text "Wplace image converter"
                 Html.img
                     [ prop.id "sourceImage"
-                      prop.onLoad (fun (_: Event) -> InitCanvas |> dispatch)
+                      prop.onLoad (fun (_: Event) -> dispatch InitCanvas)
                       prop.style [ style.display.none ] ]
                 Html.button [ prop.onClick (fun _ -> dispatch ProcessImage); prop.text "abc" ]
+                Html.input
+                    [ prop.type' "file"
+                      prop.label "choose an image"
+                      prop.accept "image/*"
+                      prop.onChange (
+                          handleFileEvent (HandleFileUploaded >> dispatch) (HandleFileUploadedURL >> dispatch)
+                      ) ]
                 Html.canvas
                     [ prop.id "targetImage"
                       prop.style (
@@ -267,9 +269,9 @@ let view (model: Model) dispatch =
                     | false -> Html.none
                     | true ->
                         let ctx = fst c
+
                         Html.canvas
-                            [
-                              prop.onClick (fun e ->
+                            [ prop.onClick (fun e ->
                                   (e.target :?> HTMLCanvasElement)
                                       .getContext_2d()
                                       .putImageData (
@@ -279,25 +281,12 @@ let view (model: Model) dispatch =
                                       ))
                               match model.SourceCanvas with
                               | Some c ->
-                                console.log $"w{c.canvas.width}" 
-                                prop.width c.canvas.width
-                              | None ->
-                                prop.width (length.px 100)
-                                
+                                  console.log $"w{c.canvas.width}"
+                                  prop.width c.canvas.width
+                              | None -> prop.width (length.px 100)
+
                               match model.SourceCanvas with
                               | Some c ->
-                                console.log $"h{c.canvas.height}"
-                                prop.height c.canvas.height
-                              | None ->
-                                prop.height (length.px 100)
-                            ]
-                match model.Image with
-                | Some image -> Html.none
-                | None ->
-                    Html.input
-                        [ prop.type' "file"
-                          prop.label "choose an image"
-                          prop.accept "image/*"
-                          prop.onChange (
-                              handleFileEvent (HandleFileUploaded >> dispatch) (HandleFileUploadedURL >> dispatch)
-                          ) ] ] ]
+                                  console.log $"h{c.canvas.height}"
+                                  prop.height c.canvas.height
+                              | None -> prop.height (length.px 100) ] ] ]

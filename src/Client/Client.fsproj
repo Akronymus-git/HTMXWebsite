@@ -25,5 +25,13 @@
         <Compile Include="Wplace.fs" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="CapSim\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Shared\Shared.fsproj" />
+    </ItemGroup>
+
 
 </Project>

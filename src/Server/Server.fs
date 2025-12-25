@@ -1,8 +1,12 @@
 module Server.Server
 
 open System
+open ClassLibrary1
+open Logging
+open System.Globalization
 open System.IO
 open System.Net.Http
+open System.Threading.Tasks
 open Client
 open Giraffe
 open Giraffe.ViewEngine.HtmlElements
@@ -37,7 +41,7 @@ let gridRandomizerMiddleware seed = router { get "" (getIsoGrid seed) }
 let notFoundPipeline =
     pipeline {
         set_status_code 404
-        plug (fun f ctx -> htmlView (Client.NotFound.NotFound false) f ctx)
+        plug (fun f ctx -> htmlView (Client.NotFound.NotFound ctx false) f ctx)
     }
 
 let forbiddenPipeline = pipeline { set_status_code 403 }
@@ -57,20 +61,21 @@ let webApp =
         get "/tools" (htmlView Tools.Tools)
         get "/wplace" (htmlView Wplace.Wplace)
         get "/Wplace" (htmlView Wplace.Wplace)
-        get "" notFoundPipeline
-        post "" forbiddenPipeline
-        patch "" forbiddenPipeline
-        put "" forbiddenPipeline
-        delete "" forbiddenPipeline
-
+        get "/capSim" (htmlString murderbingo)
+        not_found_handler notFoundPipeline
     }
-
+    
+let mainPipeline =
+    pipeline {
+        plug loggingPipeline
+        plug webApp
+    }
 let configServices services = services
 
 let app =
     application { 
         url "http://localhost:5000"
-        use_router webApp 
+        use_router mainPipeline
         memory_cache 
         use_static "public/"
         use_gzip
