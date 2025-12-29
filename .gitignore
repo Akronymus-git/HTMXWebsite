@@ -28,4 +28,5 @@ release.sh
 /src/Server/public/incremental.js
 /src/Server/public/tools.js
 /src/Server/public/wplace.js
+/src/Server/SMTPToken
 
