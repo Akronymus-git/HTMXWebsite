@@ -22,6 +22,7 @@ let notFoundPipeline =
     }
 
 let context = DBContext.Data (new SqliteConnection("Data Source=data.db"))
+context.Open()
 let webApp =
     router {
         get "/discord" (redirectTo true "https://discord.gg/yK4WsfV5zy")
@@ -46,5 +47,5 @@ let app =
         service_config id 
 
     }
-context.Open()
+
 run app

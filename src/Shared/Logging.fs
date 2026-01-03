@@ -113,5 +113,10 @@ let withLogger (filepath: string) (next:HttpFunc) (ctx: HttpContext) =
     | e ->
         AddLoggingData ctx "Errors" (Str <| e.Message)
         logRequest filepath false ctx
-        Response.internalError ctx e.Message
+        let mutable ie = e.InnerException
+        while ie <> null do
+            Console.WriteLine e.Message
+            ie <- ie.InnerException
         raise e
+        Response.internalError ctx e.Message
+
