@@ -29,4 +29,5 @@ release.sh
 /src/Server/public/tools.js
 /src/Server/public/wplace.js
 /src/Server/SMTPToken
+/src/Server/log.txt
 
