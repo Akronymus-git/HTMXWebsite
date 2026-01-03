@@ -11,7 +11,7 @@ open Saturn
 
     
 CredentialCache.DefaultNetworkCredentials.UserName <- "noreply@akronymus.net"
-CredentialCache.DefaultNetworkCredentials.Password <- System.Environment.GetCommandLineArgs()[1]
+CredentialCache.DefaultNetworkCredentials.Password <- ""//System.Environment.GetCommandLineArgs()[1]
 
 
 

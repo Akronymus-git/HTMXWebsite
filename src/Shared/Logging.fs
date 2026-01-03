@@ -16,9 +16,7 @@ type LoggingData =
     | Bool of bool
 let UnboxLoggingData data =
     match data with
-    | Str s -> s
-    | Num n -> $"{n}"
-    | Bool b -> if b then "true" else "false"
+  
     | _ -> raise (InvalidDataException(data.ToString()))
 let StringifyLoggingObj (log: LoggingData) =
     
@@ -45,8 +43,8 @@ let StringifyLoggingObj (log: LoggingData) =
                 
             | Str x -> 
                 yield formatValue x
-            | i ->
-                yield $"{UnboxLoggingData i}"
+            | Num n -> $"{n}"
+            | Bool b -> if b then "true" else "false"
             }
     collapseValues (folder log)
 let AddLoggingData (ctx:HttpContext) (path:string) (value: LoggingData) =

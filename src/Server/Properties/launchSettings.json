@@ -2,7 +2,6 @@
   "profiles": {
     "Server": {
       "commandName": "Project",
-      "commandLineArgs": "YT1QPWZTCYQCV4EU",
       "launchBrowser": false,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
