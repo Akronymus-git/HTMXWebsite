@@ -1,6 +1,5 @@
 module IncrementalGame.Storage
 
-open System.Runtime.CompilerServices
 open Browser.Types
 
 

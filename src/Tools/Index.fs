@@ -1,16 +1,7 @@
 ﻿module Index
 
-open System
-open Browser
-open Elmish.Obsolete
-open Fable.Core
 open Fable.Core.JS
-open Fable.SimpleJson
 open Feliz
-open FSharp.Data.JsonExtensions
-open FSharp.Data
-open Feliz.Styles
-open Newtonsoft.Json
 
 [<Literal>]
 let sample =

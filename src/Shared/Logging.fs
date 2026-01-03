@@ -82,16 +82,18 @@ let AddLoggingData (ctx:HttpContext) (path:string) (value: LoggingData) =
             | _ -> Arr [currPart; data] 
     ctx.Items["LoggingData"] <- insertData data (List.tail partials) (List.head partials) value
     
-let logRequest success (ctx:HttpContext) =
+let logRequest path success (ctx:HttpContext) =
     AddLoggingData ctx "request.success" (Bool success)
     let loggingObj = ctx.Items["LoggingData"] :?> LoggingData
     let logLine = StringifyLoggingObj loggingObj
     if success then
         if Random.Shared.Next(0,100) < 100 then
+            File.WriteAllText (path,logLine)
             Console.WriteLine logLine
     else
+        File.WriteAllText (path,logLine)
         Console.WriteLine logLine
-let loggingPipeline (next:HttpFunc) (ctx: HttpContext) =
+let withLogger (filepath: string) (next:HttpFunc) (ctx: HttpContext) =
     let requestInfo = Obj [
             "request", Obj [
                 "path", Str ctx.Request.Path
@@ -106,10 +108,10 @@ let loggingPipeline (next:HttpFunc) (ctx: HttpContext) =
     try 
         let res = next ctx
         AddLoggingData ctx "response.statusCode" (Num ctx.Response.StatusCode)
-        logRequest true ctx
+        logRequest filepath true ctx
         res
     with
     | e ->
         AddLoggingData ctx "Errors" (Str <| e.Message)
-        logRequest false ctx
+        logRequest filepath false ctx
         Response.internalError ctx e.Message

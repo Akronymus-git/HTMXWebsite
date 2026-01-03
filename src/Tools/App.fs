@@ -1,11 +1,7 @@
 module App
 open Index
-open System
 open Elmish
-open Elmish.React
 
-open Fable.Core
-open Fable.Core.JsInterop
 
 #if DEBUG
 open Elmish.HMR

@@ -5,29 +5,31 @@
     <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="DBAccess.fs" />
-    <Compile Include="AdminPipeline.fs" />
+    <Compile Include="CapSim.fs" />
+    <Compile Include="Login.fs" />
     <Compile Include="Server.fs" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+    <PackageReference Include="BouncyCastle.Cryptography" Version="2.6.2" />
     <PackageReference Include="Dapper.FSharp" Version="4.9.0" />
     <PackageReference Include="Giraffe.Htmx" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.7" />
+    <PackageReference Include="MailKit" Version="4.14.1" />
     <PackageReference Include="Saturn" Version="0.16.1" />
     <PackageReference Update="FSharp.Core" Version="8.0.301" />
+    <PackageReference Include="SQLProvider" Version="1.5.17" />
+    <PackageReference Include="SQLProvider.SQLite" Version="1.5.17" />
+    <PackageReference Include="System.Data.SQLite" Version="2.0.2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Client\Client.fsproj" />
+    <ProjectReference Include="..\DBContext\DBContext.fsproj" />
     <ProjectReference Include="..\Shared\Shared.fsproj" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="public\style.css" />
-    <Content Include="public\favicon.ico" />
-    <Content Include="public\styleInc.css" />
+    <Content Include="data.db" />
+    <Content Include="public\*" />
     <Content Include="webpack.config.js" />
-    <Content Remove="distW\**" />
-    <Content Remove="distT\**" />
-    <Content Remove="distI\**" />
   </ItemGroup>
   <ItemGroup>
     <_ContentIncludedByDefault Remove="dist\fable_modules\fable-library-js.4.24.0\package.json" />
@@ -37,10 +39,5 @@
     <_ContentIncludedByDefault Remove="distI\fable_modules\fable-library-js.4.24.0\package.json" />
     <_ContentIncludedByDefault Remove="distW\fable_modules\fable-library-js.4.24.0\package.json" />
     <_ContentIncludedByDefault Remove="distT\fable_modules\fable-library-js.4.24.0\package.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Remove="distW\**" />
-    <EmbeddedResource Remove="distT\**" />
-    <EmbeddedResource Remove="distI\**" />
   </ItemGroup>
 </Project>

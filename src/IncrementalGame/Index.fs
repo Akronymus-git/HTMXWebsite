@@ -2,7 +2,6 @@
 
 open System
 open Browser
-open Elmish.Obsolete
 open Feliz
 
 open IncrementalGame.Storage

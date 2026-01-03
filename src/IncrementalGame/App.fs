@@ -2,10 +2,8 @@ module App
 
 open System
 open Elmish
-open Elmish.React
 
 open Fable.Core
-open Fable.Core.JsInterop
 open Index
 let timer onTick model =
     let start dispatch =

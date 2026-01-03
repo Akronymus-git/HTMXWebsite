@@ -3,18 +3,11 @@
 open System.Text
 open Browser
 open Browser.Types
-open Fable.Core
-open Browser
-open Feliz
-open Feliz.style
 open Feliz
 open Fable.Core.JsInterop
 open Fable.Core.JS
-open Browser.Blob
 open Microsoft.FSharp.Collections
-open Fable.Core.Extensions
 
-open Fable.Core.JsInterop
 
 type Image =
     { Image: Blob

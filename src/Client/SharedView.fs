@@ -10,18 +10,17 @@ let linkBoosted path name =
 
 let link path name =
     a [ _href path;  ] [ Text name ]
-let basicLayout = div [ _id "pagelayout" ]
 
-let basicNavbar =
-    [ div [ _id "navbar" ] [ linkBoosted "/" "Home"; linkBoosted "/about" "About"; linkBoosted "/randomStuff" "Random stuff"; link "/discord" "Discord"; link "/rpg" "Incremental Prototype" ] ]
  
-let SharedViewLayout
-    (pagelayout: XmlNode list -> XmlNode)
-    (navbar: XmlNode list)
+let basicPage 
     (_title: string)
     (_body: XmlNode list)
     hxRequest
     =
+    let pagelayout =  div [ _id "pagelayout" ]
+    let navbar =
+        [ div [ _id "navbar" ] [ linkBoosted "/" "Home"; linkBoosted "/about" "About"; linkBoosted "/randomStuff" "Random stuff"; link "/discord" "Discord"; link "/rpg" "Incremental Prototype" ] ]
+
     match hxRequest with
     | false ->
          html
@@ -44,4 +43,4 @@ let SharedViewLayout
                 div [ _style "grid-area:main" ] _body ] 
 
 
-let basicPage = SharedViewLayout basicLayout basicNavbar
+ 

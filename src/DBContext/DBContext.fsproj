@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <RootNamespace>Data</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="Sessions.fs" />
+        <Compile Include="Users.fs" />
+        <Compile Include="Library.fs"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="Microsoft.Data.Sqlite">
+        <HintPath>..\..\..\..\.nuget\packages\microsoft.data.sqlite.core\9.0.4\lib\net8.0\Microsoft.Data.Sqlite.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+</Project>
