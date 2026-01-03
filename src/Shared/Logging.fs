@@ -93,6 +93,7 @@ let logRequest path success (ctx:HttpContext) =
     else
         File.WriteAllText (path,logLine)
         Console.WriteLine logLine
+        
 let withLogger (filepath: string) (next:HttpFunc) (ctx: HttpContext) =
     let requestInfo = Obj [
             "request", Obj [
@@ -115,3 +116,4 @@ let withLogger (filepath: string) (next:HttpFunc) (ctx: HttpContext) =
         AddLoggingData ctx "Errors" (Str <| e.Message)
         logRequest filepath false ctx
         Response.internalError ctx e.Message
+        raise e
