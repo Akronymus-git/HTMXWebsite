@@ -16,11 +16,8 @@ type LoggingData =
     | Bool of bool
 let StringifyLoggingObj (log: LoggingData) =
     let collapseValues strings =
-        Console.WriteLine $"length {(Seq.length strings)}"
         if Seq.length strings > 0 then
-            Console.WriteLine "before reduce"
             let r = Seq.reduce (fun a b -> a + "," + b) strings
-            Console.WriteLine "after reduce"
             r
         else
             ""
@@ -84,11 +81,11 @@ let logRequest path success (ctx:HttpContext) =
     let loggingObj = ctx.Items["LoggingData"] :?> LoggingData
     let logLine = StringifyLoggingObj loggingObj
     if success then
-        if Random.Shared.Next(0,100) < 100 then
-            File.WriteAllText (path,logLine)
+        if Random.Shared.Next(0,100) < 10 then
+            File.AppendAllText (path,logLine)
             Console.WriteLine logLine
     else
-        File.WriteAllText (path,logLine)
+        File.AppendAllText (path,logLine)
         Console.WriteLine logLine
         
 let withLogger (filepath: string) (next:HttpFunc) (ctx: HttpContext) =
@@ -116,6 +113,5 @@ let withLogger (filepath: string) (next:HttpFunc) (ctx: HttpContext) =
         while ie <> null do
             Console.WriteLine e.Message
             ie <- ie.InnerException
-        raise e
         Response.internalError ctx e.Message
 
