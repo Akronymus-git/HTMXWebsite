@@ -14,15 +14,14 @@ type LoggingData =
     | Str of string
     | Num of float
     | Bool of bool
-let UnboxLoggingData data =
-    match data with
-  
-    | _ -> raise (InvalidDataException(data.ToString()))
 let StringifyLoggingObj (log: LoggingData) =
-    
     let collapseValues strings =
-        if Seq.length strings > 0 then 
-            Seq.reduce (fun a b -> a + "," + b) strings
+        Console.WriteLine $"length {(Seq.length strings)}"
+        if Seq.length strings > 0 then
+            Console.WriteLine "before reduce"
+            let r = Seq.reduce (fun a b -> a + "," + b) strings
+            Console.WriteLine "after reduce"
+            r
         else
             ""
     let formatValue (str:string) =
