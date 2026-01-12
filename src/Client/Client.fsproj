@@ -15,6 +15,7 @@
         <Compile Include="SharedView.fs" />        
         <Compile Include="Status_404.fs" />        
         <Compile Include="Login.fs" />        
+        <Compile Include="Log.fs" />        
     </ItemGroup>
 
     <ItemGroup>

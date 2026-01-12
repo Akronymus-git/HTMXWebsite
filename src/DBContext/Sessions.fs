@@ -1,14 +1,15 @@
-module Data.Sessions
+module DBContext.Sessions
 
 open System
+open System.Globalization
 open Microsoft.Data.Sqlite
 
 
 type Session =
     {
-        Name: string;
-        Id: int;
-        Email: string;
+        key: string;
+        userId: int;
+        expires: DateTime;
     }
 
 type Sessions (connection: SqliteConnection) =
@@ -24,10 +25,27 @@ type Sessions (connection: SqliteConnection) =
             Async.AwaitTask (comm.ExecuteNonQueryAsync()) |> ignore
             return key
         }
+        
+    member _.GetSession userId  =
+        let comm = connection.CreateCommand()
+        let key = Guid.NewGuid()
+        comm.CommandText <- "select key, expires, userId from Sessions where userId = $userId and key = $key and expires > $expires"
+        comm.Parameters.AddWithValue ("key",key.ToString()) |> ignore
+        comm.Parameters.AddWithValue ("userId",userId) |> ignore
+        comm.Parameters.AddWithValue ("expires",DateTime.UtcNow.ToString("yyyyMMDDhhmmss")) |> ignore
+        task {
+            let! reader = comm.ExecuteReaderAsync()
+            match! reader.ReadAsync() with
+            | false ->
+                return None
+            | true ->
+                return Some {key = string reader["key"]; userId =  int (reader["userId"].ToString()); expires =  DateTime.ParseExact ((string reader["Email"]), "yyyyMMDDhhmmss",CultureInfo.InvariantCulture) }
+        }
     member _.DeleteSession (key: Guid) =
         let comm = connection.CreateCommand()
-        comm.CommandText <- "delete Sessions where key = $key"
+        comm.CommandText <- "delete Sessions where key = $key and expires > $expires"
         comm.Parameters.AddWithValue ("key",key.ToString()) |> ignore
+        comm.Parameters.AddWithValue ("expires",DateTime.UtcNow.ToString("yyyyMMDDhhmmss")) |> ignore
         async {
             Async.AwaitTask (comm.ExecuteNonQueryAsync())|> ignore
         }

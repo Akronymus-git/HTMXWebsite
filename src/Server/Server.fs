@@ -28,6 +28,7 @@ let webApp =
         get "/discord" (redirectTo true "https://discord.gg/yK4WsfV5zy")
         forward "/login" (Login.Router context)
         forward "/capSim" CapSim.Router
+        forward "admin" (Admin.Logs.Router context)
         not_found_handler notFoundPipeline
     }
 

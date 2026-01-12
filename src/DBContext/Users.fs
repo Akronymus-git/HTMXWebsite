@@ -16,9 +16,9 @@ type Users (connection: SqliteConnection) =
         let comm = connection.CreateCommand()
         comm.CommandText <- "select * from Users where id = $id"
         comm.Parameters.AddWithValue ("id",id) |> ignore
-        async {
-            let! reader = Async.AwaitTask (comm.ExecuteReaderAsync())
-            match! Async.AwaitTask (reader.ReadAsync()) with
+        task {
+            let! reader = comm.ExecuteReaderAsync()
+            match! reader.ReadAsync() with
             | false ->
                 return None
             | true ->
@@ -31,8 +31,8 @@ type Users (connection: SqliteConnection) =
         comm.Parameters.AddWithValue ("name",name) |> ignore
         comm.Parameters.AddWithValue ("email",email) |> ignore
         comm.Parameters.AddWithValue ("password",password) |> ignore
-        async {
-            let! res = Async.AwaitTask (comm.ExecuteScalarAsync())
+        task {
+            let! res = comm.ExecuteScalarAsync()
             return res.ToString() |> int
         }
         
@@ -41,9 +41,9 @@ type Users (connection: SqliteConnection) =
         let currDateTime = DateTime.Now.ToString("YYYYMMDDhhmmss")
         comm.CommandText <- $"select u.* from Users as u inner join main.Sessions S on u.id = S.userId where s.key = $key and S.expires < '{currDateTime}'"
         comm.Parameters.AddWithValue ("key", sessionId) |> ignore
-        async {
-            let! reader = Async.AwaitTask (comm.ExecuteReaderAsync())
-            match! Async.AwaitTask (reader.ReadAsync()) with
+        task {
+            let! reader = comm.ExecuteReaderAsync()
+            match! reader.ReadAsync() with
             | false ->
                 return None
             | true ->

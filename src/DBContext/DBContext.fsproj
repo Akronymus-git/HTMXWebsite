@@ -9,6 +9,7 @@
     <ItemGroup>
         <Compile Include="Sessions.fs" />
         <Compile Include="Users.fs" />
+        <Compile Include="Logs.fs" />
         <Compile Include="Library.fs"/>
     </ItemGroup>
 
