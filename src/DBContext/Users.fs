@@ -1,6 +1,7 @@
 module DBContext.Users
 
 open System
+open Data.SharedConsts
 open Microsoft.Data.Sqlite
 
 type User =
@@ -38,9 +39,10 @@ type Users (connection: SqliteConnection) =
         
     member _.FindUserBySession sessionId =
         let comm = connection.CreateCommand()
-        let currDateTime = DateTime.Now.ToString("YYYYMMDDhhmmss")
-        comm.CommandText <- $"select u.* from Users as u inner join main.Sessions S on u.id = S.userId where s.key = $key and S.expires < '{currDateTime}'"
+        let currDateTime = DateTime.Now.ToString(DateTimeStorageFormat)
+        comm.CommandText <- $"select u.* from Users as u inner join main.Sessions S on u.id = S.userId where s.key = $key and S.expires > $currDate"
         comm.Parameters.AddWithValue ("key", sessionId) |> ignore
+        comm.Parameters.AddWithValue ("currDate", currDateTime) |> ignore
         task {
             let! reader = comm.ExecuteReaderAsync()
             match! reader.ReadAsync() with

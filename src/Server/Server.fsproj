@@ -7,6 +7,7 @@
     <ItemGroup>
         <Compile Include="CapSim.fs"/>
         <Compile Include="Login.fs"/>
+        <Compile Include="Bingo.fs" />
         <Compile Include="Admin\Logs.fs"/>
         <Compile Include="Server.fs"/>
     </ItemGroup>
@@ -14,6 +15,7 @@
         <PackageReference Include="BCrypt.Net-Next" Version="4.0.3"/>
         <PackageReference Include="BouncyCastle.Cryptography" Version="2.6.2"/>
         <PackageReference Include="Dapper.FSharp" Version="4.9.0"/>
+        <PackageReference Include="dbup-sqlite" Version="6.0.4" />
         <PackageReference Include="Giraffe.Htmx" Version="2.0.0"/>
         <PackageReference Include="MailKit" Version="4.14.1"/>
         <PackageReference Include="Saturn" Version="0.16.1"/>
@@ -28,7 +30,6 @@
         <ProjectReference Include="..\Shared\Shared.fsproj"/>
     </ItemGroup>
     <ItemGroup>
-        <Content Include="data.db"/>
         <Content Include="public\*"/>
         <Content Include="webpack.config.js"/>
     </ItemGroup>

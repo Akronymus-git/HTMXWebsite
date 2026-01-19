@@ -4,7 +4,9 @@ module DBContext.Logs
 open System
 open System.Collections.Generic
 open System.Globalization
+open Data.SharedConsts
 open Microsoft.Data.Sqlite
+
 
 
 type Log =
@@ -40,7 +42,7 @@ type Logs (connection: SqliteConnection) =
                     | false, _  -> None
                     | true, x -> Some x
                 let timestamp =
-                    DateTime.ParseExact (string reader["timestamp"], "yyyyMMddhhmmss", CultureInfo.InvariantCulture)
+                    DateTime.ParseExact (string reader["timestamp"], DateTimeStorageFormat, CultureInfo.InvariantCulture)
                 results.Add {Data = string (reader["data"]); UserId = userid; TimeStamp = timestamp}
             return results |> List.ofSeq
         }

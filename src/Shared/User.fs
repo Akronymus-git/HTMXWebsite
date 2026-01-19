@@ -9,7 +9,7 @@ open Giraffe.Core
 let WithUser (dbcontext: DBContext.Data) (next:HttpFunc) (ctx:HttpContext) =
     let authcookie = (ctx.Request.Cookies.Item "user-auth")
     if authcookie <> null then
-        let user = dbcontext.Users.FindUserBySession (Guid.Parse authcookie) |> Async.RunSynchronously
+        let user = dbcontext.Users.FindUserBySession (Guid.Parse authcookie) |> Async.AwaitTask |> Async.RunSynchronously
         match user with
         | Some u ->
             ctx.Items.Add ("userName", u.Name)

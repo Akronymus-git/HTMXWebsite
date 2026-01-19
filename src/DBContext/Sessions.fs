@@ -2,6 +2,7 @@ module DBContext.Sessions
 
 open System
 open System.Globalization
+open Data.SharedConsts
 open Microsoft.Data.Sqlite
 
 
@@ -20,7 +21,7 @@ type Sessions (connection: SqliteConnection) =
         comm.CommandText <- "insert into Sessions (key, userId, expires) values ($key, $userId, $expires);"
         comm.Parameters.AddWithValue ("key",key.ToString()) |> ignore
         comm.Parameters.AddWithValue ("userId",userId) |> ignore
-        comm.Parameters.AddWithValue ("expires",expires.ToString("yyyyMMDDhhmmss")) |> ignore
+        comm.Parameters.AddWithValue ("expires",expires.ToString(DateTimeStorageFormat)) |> ignore
         async {
             Async.AwaitTask (comm.ExecuteNonQueryAsync()) |> ignore
             return key
@@ -32,20 +33,20 @@ type Sessions (connection: SqliteConnection) =
         comm.CommandText <- "select key, expires, userId from Sessions where userId = $userId and key = $key and expires > $expires"
         comm.Parameters.AddWithValue ("key",key.ToString()) |> ignore
         comm.Parameters.AddWithValue ("userId",userId) |> ignore
-        comm.Parameters.AddWithValue ("expires",DateTime.UtcNow.ToString("yyyyMMDDhhmmss")) |> ignore
+        comm.Parameters.AddWithValue ("expires",DateTime.UtcNow.ToString(DateTimeStorageFormat)) |> ignore
         task {
             let! reader = comm.ExecuteReaderAsync()
             match! reader.ReadAsync() with
             | false ->
                 return None
             | true ->
-                return Some {key = string reader["key"]; userId =  int (reader["userId"].ToString()); expires =  DateTime.ParseExact ((string reader["Email"]), "yyyyMMDDhhmmss",CultureInfo.InvariantCulture) }
+                return Some {key = string reader["key"]; userId =  int (reader["userId"].ToString()); expires =  DateTime.ParseExact ((string reader["Email"]), DateTimeStorageFormat,CultureInfo.InvariantCulture) }
         }
     member _.DeleteSession (key: Guid) =
         let comm = connection.CreateCommand()
         comm.CommandText <- "delete Sessions where key = $key and expires > $expires"
         comm.Parameters.AddWithValue ("key",key.ToString()) |> ignore
-        comm.Parameters.AddWithValue ("expires",DateTime.UtcNow.ToString("yyyyMMDDhhmmss")) |> ignore
+        comm.Parameters.AddWithValue ("expires",DateTime.UtcNow.ToString(DateTimeStorageFormat)) |> ignore
         async {
             Async.AwaitTask (comm.ExecuteNonQueryAsync())|> ignore
         }
