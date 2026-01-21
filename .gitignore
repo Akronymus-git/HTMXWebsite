@@ -20,14 +20,11 @@ release.sh
 /src/Server/.init
 /src/Server/init.sql
 *bundle.js*
-/src/Server/distI/
-/src/Server/distT/
-/src/Server/dist/
-/src/Server/distW/
 *.js.map
 /src/Server/public/incremental.js
 /src/Server/public/tools.js
 /src/Server/public/wplace.js
 /src/Server/SMTPToken
+./src/Server/log.txt
 /src/Server/log.txt
-
+src/Server/data.db
