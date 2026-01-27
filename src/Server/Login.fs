@@ -83,6 +83,40 @@ let createUser (dbcontext: DBContext.Data) next (ctx: HttpContext) =
                     ctx)
     }
 
+let loginUser (dbcontext: DBContext.Data) next (ctx: HttpContext) =
+    task {
+        let! form = ctx.Request.ReadFormAsync()
+        let usernameOpt, passwordOpt, _ = extractFieldsFromForm form
+
+        let invalidLogin statusCode =
+            pipeline {
+                set_status_code statusCode
+                render_html (Client.Login.LoginForm(usernameOpt))
+            }
+
+        match usernameOpt, passwordOpt with
+        | Some username, Some password ->
+            let! userAuth = dbcontext.Users.FindUserIdAndPasswordHashByName username
+
+            match userAuth with
+            | None ->
+                return! (invalidLogin 401) next ctx
+            | Some (userId, pwHash) ->
+                if BCrypt.Verify(password, pwHash) then
+                    let! session = dbcontext.Sessions.CreateSession userId (DateTime.UtcNow.AddDays(31))
+                    let opts = new CookieOptions()
+                    opts.Expires <- DateTime.UtcNow.AddDays(31)
+                    opts.Secure <- true
+                    opts.HttpOnly <- true
+                    ctx.Response.Cookies.Append("user-auth", session.ToString(), opts)
+                    return! ((pipeline { redirect_to false "/" }) next ctx)
+                else
+                    return! (invalidLogin 401) next ctx
+
+        | _ ->
+            // Missing required fields -> treat as bad request
+            return! (invalidLogin 400) next ctx
+    }
 let verifyEmail (dbcontext: DBContext.Data) next (ctx: HttpContext) = Giraffe.Core.earlyReturn ctx
 
 let Router (dbcontext: DBContext.Data) =
@@ -91,5 +125,5 @@ let Router (dbcontext: DBContext.Data) =
         post "/register" (createUser dbcontext)
         get "/verify" (verifyEmail dbcontext)
         get "" (htmlView (Client.Login.LoginForm(None)))
-        post "" (htmlString "")
+        post "" (loginUser dbcontext)
     }

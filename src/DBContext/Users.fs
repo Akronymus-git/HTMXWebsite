@@ -59,7 +59,7 @@ type Users(connection: SqliteConnection) =
 
     member _.FindUserBySession sessionId =
         let comm = connection.CreateCommand()
-        let currDateTime = DateTime.Now.ToString(DateTimeStorageFormat)
+        let currDateTime = DateTime.UtcNow.ToString(DateTimeStorageFormat)
 
         comm.CommandText <-
             $"select u.* from Users as u inner join main.Sessions S on u.id = S.userId where s.key = $key and S.expires > $currDate"
@@ -78,4 +78,19 @@ type Users(connection: SqliteConnection) =
                         { Name = string reader["Name"]
                           Id = int (reader["id"].ToString())
                           Email = string reader["Email"] }
+        }
+    member _.FindUserIdAndPasswordHashByName(name: string) =
+        let comm = connection.CreateCommand()
+        comm.CommandText <- "select id, Password from Users where Name = $name"
+        comm.Parameters.AddWithValue("name", name) |> ignore
+
+        task {
+            let! reader = comm.ExecuteReaderAsync()
+
+            match! reader.ReadAsync() with
+            | false -> return None
+            | true ->
+                let userId = int (reader["id"].ToString())
+                let pwHash = string reader["Password"]
+                return Some(userId, pwHash)
         }
