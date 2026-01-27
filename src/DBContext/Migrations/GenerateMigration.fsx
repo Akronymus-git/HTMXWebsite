@@ -5,6 +5,7 @@ open System.IO
 
 [<Literal>]
 let dateFormat = "yyyyMMddHHmmss"
+
 printf "Migration Name: "
 let name = Console.ReadLine()
 let fileName = DateTime.UtcNow.ToString(dateFormat) + "_" + name + ".sql"

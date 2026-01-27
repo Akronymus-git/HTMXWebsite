@@ -13,12 +13,12 @@ open System.Reflection
 
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Data.Sqlite
-    
+
 [<Literal>]
 let connectionString = "Data Source=data.db"
-    
+
 CredentialCache.DefaultNetworkCredentials.UserName <- "noreply@akronymus.net"
-CredentialCache.DefaultNetworkCredentials.Password <- ""//System.Environment.GetCommandLineArgs()[1]
+CredentialCache.DefaultNetworkCredentials.Password <- "" //System.Environment.GetCommandLineArgs()[1]
 
 
 let runMigrations (connectionString: string) =
@@ -29,16 +29,18 @@ let runMigrations (connectionString: string) =
             .LogToConsole()
             .WithVariablesDisabled()
             .Build()
+
     upgrader.PerformUpgrade()
 
 runMigrations connectionString |> ignore
+
 let notFoundPipeline =
     pipeline {
         set_status_code 404
-        plug Client.Status_404.Page
+        plug (htmlView Client.Status_404.Page)
     }
 
-let context = DBContext.Data (new SqliteConnection(connectionString))
+let context = DBContext.Data(new SqliteConnection(connectionString))
 context.Open()
 
 
@@ -47,25 +49,29 @@ let webApp =
         get "/discord" (redirectTo true "https://discord.gg/yK4WsfV5zy")
         forward "/login" (Login.Router context)
         forward "/capSim" CapSim.Router
-        forward "admin" (Admin.Logs.Router context)
+        forward "/admin" (Admin.Admin.Router context)
         forward "/bingo" (Bingo.Router context)
+        get "/" (htmlString "test")
         not_found_handler notFoundPipeline
     }
 
 
 let app =
-    application { 
+    application {
         url "http://localhost:5000"
-        use_router
-            (pipeline {
+
+        use_router (
+            pipeline {
                 plug (withLogger "log.txt")
                 plug (Shared.User.WithUser context)
                 plug webApp
-            })
-        memory_cache 
+            }
+        )
+
+        memory_cache
         use_static "public/"
         use_gzip
-        service_config id 
+        service_config id
 
     }
 

@@ -6,24 +6,26 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Giraffe.ViewEngine" Version="1.4.0" />
-        <PackageReference Update="FSharp.Core" Version="8.0.301" />
-        <PackageReference Include="Giraffe.ViewEngine.Htmx" Version="2.0.0" />
-    </ItemGroup>
-
-    <ItemGroup>        
-        <Compile Include="SharedView.fs" />        
-        <Compile Include="Status_404.fs" />        
-        <Compile Include="Login.fs" />        
-        <Compile Include="Log.fs" />        
+        <PackageReference Include="Giraffe.ViewEngine" Version="1.4.0"/>
+        <PackageReference Update="FSharp.Core" Version="8.0.301"/>
+        <PackageReference Include="Giraffe.ViewEngine.Htmx" Version="2.0.0"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Include="CapSim\Index.fs" />
+        <Compile Include="SharedView.fs"/>
+        <Compile Include="Status_404.fs"/>
+        <Compile Include="Login.fs"/>
+        <Compile Include="Log.fs"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Shared\Shared.fsproj" />
+        <Compile Include="CapSim\Index.fs"/>
+        <Compile Include="Admin\Users\Users.fs" />
+        <Compile Include="Admin\Users\UserDetails.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Shared\Shared.fsproj"/>
     </ItemGroup>
 
 

@@ -1,4 +1,5 @@
 module Server.CapSim
+
 open System.Net
 open System.Net.Mail
 open System.Threading
@@ -17,4 +18,5 @@ let Router next ctx =
             get "" (htmlView (CapSim.Index ctx))
             get "/" (htmlView (CapSim.Index ctx))
         }
+
     r next ctx

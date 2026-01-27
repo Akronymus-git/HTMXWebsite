@@ -71,6 +71,7 @@ let LoginForm (username: string option) =
     let createInput inputtype field lbl value =
         seq {
             yield label [ _for field ] [ Text lbl ]
+
             yield
                 input
                     [ _type inputtype

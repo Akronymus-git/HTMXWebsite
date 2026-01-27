@@ -27,4 +27,5 @@ release.sh
 /src/Server/SMTPToken
 ./src/Server/log.txt
 /src/Server/log.txt
-src/Server/data.db
+*.db*
+.run/*

@@ -1,3 +1,4 @@
 module Data.SharedConsts
 
-[<Literal>] let DateTimeStorageFormat = "yyyyMMddHHmmss"
+[<Literal>]
+let DateTimeStorageFormat = "yyyyMMddHHmmss"

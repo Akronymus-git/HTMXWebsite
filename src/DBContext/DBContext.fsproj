@@ -7,19 +7,24 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Include="Migrations\GenerateMigration.fsx" />
-        <Compile Include="SharedConsts.fs" />
-        <Compile Include="Sessions.fs" />
-        <Compile Include="Users.fs" />
-        <Compile Include="Logs.fs" />
+        <None Include="Migrations\GenerateMigration.fsx"/>
+        <Compile Include="SharedConsts.fs"/>
+        <Compile Include="Sessions.fs"/>
+        <Compile Include="Users.fs"/>
+        <Compile Include="Logs.fs"/>
+        <Compile Include="Permissions.fs" />
         <Compile Include="Library.fs"/>
-        <EmbeddedResource Include="Migrations/*.sql" />
+        <EmbeddedResource Include="Migrations/*.sql"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Reference Include="Microsoft.Data.Sqlite">
-        <HintPath>..\..\..\..\.nuget\packages\microsoft.data.sqlite.core\9.0.4\lib\net8.0\Microsoft.Data.Sqlite.dll</HintPath>
-      </Reference>
+        <Reference Include="Microsoft.Data.Sqlite">
+            <HintPath>..\..\..\..\.nuget\packages\microsoft.data.sqlite.core\9.0.4\lib\net8.0\Microsoft.Data.Sqlite.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="FSharp.Control.TaskSeq" Version="0.4.0" />
     </ItemGroup>
 
 </Project>

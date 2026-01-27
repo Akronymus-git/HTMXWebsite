@@ -4,7 +4,8 @@ open Giraffe
 open Saturn
 
 
-let str = $$$"""
+let str =
+    $$$"""
 <!-- Thanks to:
 - http://davidbau.com/archives/2010/01/30/random_seeds_coded_hints_and_quintillions.html
 - https://stackoverflow.com/a/2450976/174466
@@ -216,7 +217,5 @@ load_data_from_qs()
 </script>
 """
 
-let Router (dbcontext: DBContext.Data)=
-    router {
-        get "/andarrius/battlebrothers" (htmlString str)
-    }
+let Router (dbcontext: DBContext.Data) =
+    router { get "/andarrius/battlebrothers" (htmlString str) }

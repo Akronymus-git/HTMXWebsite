@@ -1,6 +1,7 @@
 ﻿* {
     box-sizing: border-box;
 }
+
 input-grid {
     display: grid;
     grid-template-columns: max-content max-content;
@@ -12,6 +13,7 @@ input-grid {
         flex-direction: column;
     }
 }
+
 input:has(+ details > error-label) {
     border-color: red;
 }
