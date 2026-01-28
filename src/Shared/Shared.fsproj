@@ -8,9 +8,9 @@
 
     <ItemGroup>
         <Compile Include="Email.fs"/>
-        <Compile Include="Logging.fs"/>
         <Compile Include="User.fs"/>
         <Compile Include="Permission.fs" />
+        <Compile Include="Logging.fs" />
     </ItemGroup>
 
     <ItemGroup>

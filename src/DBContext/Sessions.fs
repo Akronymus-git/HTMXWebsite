@@ -12,37 +12,36 @@ type Session =
       expires: DateTime }
 
 type Sessions(connection: SqliteConnection) =
-    member val private Connection = connection
 
     member _.CreateSession userId (expires: DateTime) =
-        let comm = connection.CreateCommand()
-        let key = Guid.NewGuid()
-        comm.CommandText <- "insert into Sessions (key, userId, expires) values ($key, $userId, $expires);"
-        comm.Parameters.AddWithValue("key", key.ToString()) |> ignore
-        comm.Parameters.AddWithValue("userId", userId) |> ignore
+        task {
+            let comm = connection.CreateCommand()
+            let key = Guid.NewGuid()
+            comm.CommandText <- "insert into Sessions (key, userId, expires) values ($key, $userId, $expires);"
+            comm.Parameters.AddWithValue("key", key.ToString()) |> ignore
+            comm.Parameters.AddWithValue("userId", userId) |> ignore
 
-        comm.Parameters.AddWithValue("expires", expires.ToString(DateTimeStorageFormat))
-        |> ignore
+            comm.Parameters.AddWithValue("expires", expires.ToString(DateTimeStorageFormat))
+            |> ignore
 
-        async {
-            Async.AwaitTask(comm.ExecuteNonQueryAsync()) |> ignore
+            let! _ = comm.ExecuteNonQueryAsync()
             return key
         }
 
     member _.GetSession userId =
-        let comm = connection.CreateCommand()
-        let key = Guid.NewGuid()
-
-        comm.CommandText <-
-            "select key, expires, userId from Sessions where userId = $userId and key = $key and expires > $expires"
-
-        comm.Parameters.AddWithValue("key", key.ToString()) |> ignore
-        comm.Parameters.AddWithValue("userId", userId) |> ignore
-
-        comm.Parameters.AddWithValue("expires", DateTime.UtcNow.ToString(DateTimeStorageFormat))
-        |> ignore
-
         task {
+            let comm = connection.CreateCommand()
+            let key = Guid.NewGuid()
+
+            comm.CommandText <-
+                "select key, expires, userId from Sessions where userId = $userId and key = $key and expires > $expires"
+
+            comm.Parameters.AddWithValue("key", key.ToString()) |> ignore
+            comm.Parameters.AddWithValue("userId", userId) |> ignore
+
+            comm.Parameters.AddWithValue("expires", DateTime.UtcNow.ToString(DateTimeStorageFormat))
+            |> ignore
+
             let! reader = comm.ExecuteReaderAsync()
 
             match! reader.ReadAsync() with
@@ -61,17 +60,23 @@ type Sessions(connection: SqliteConnection) =
         }
 
     member _.DeleteSession(key: Guid) =
-        let comm = connection.CreateCommand()
-        comm.CommandText <- "delete Sessions where key = $key and expires > $expires"
-        comm.Parameters.AddWithValue("key", key.ToString()) |> ignore
+        task {
+            let comm = connection.CreateCommand()
+            comm.CommandText <- "delete Sessions where key = $key and expires > $expires"
+            comm.Parameters.AddWithValue("key", key.ToString()) |> ignore
 
-        comm.Parameters.AddWithValue("expires", DateTime.UtcNow.ToString(DateTimeStorageFormat))
-        |> ignore
+            comm.Parameters.AddWithValue("expires", DateTime.UtcNow.ToString(DateTimeStorageFormat))
+            |> ignore
 
-        async { Async.AwaitTask(comm.ExecuteNonQueryAsync()) |> ignore }
+            let _ = comm.ExecuteNonQueryAsync()
+            ()
+        }
 
     member _.DeleteAllUserSessions(userId: int) =
-        let comm = connection.CreateCommand()
-        comm.CommandText <- "delete Sessions where userId = $userId"
-        comm.Parameters.AddWithValue("userId", userId) |> ignore
-        async { Async.AwaitTask(comm.ExecuteNonQueryAsync()) |> ignore }
+        task {
+            let comm = connection.CreateCommand()
+            comm.CommandText <- "delete Sessions where userId = $userId"
+            comm.Parameters.AddWithValue("userId", userId) |> ignore
+            let! _ = comm.ExecuteNonQueryAsync()
+            ()
+        }

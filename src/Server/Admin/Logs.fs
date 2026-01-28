@@ -9,23 +9,23 @@ open Giraffe.Core
 
 
 let returnTable (context: DBContext.Data) next (ctx: HttpContext) =
-    let offset =
-        (string
-         >> fun x ->
-             match Int32.TryParse x with
-             | false, _ -> 0
-             | true, y -> y)
-            ctx.Request.Query["offset"]
-
-    let limit =
-        (string
-         >> fun x ->
-             match Int32.TryParse x with
-             | false, _ -> 10
-             | true, y -> y)
-            ctx.Request.Query["limit"]
-
     task {
+        let offset =
+            (string
+             >> fun x ->
+                 match Int32.TryParse x with
+                 | false, _ -> 0
+                 | true, y -> y)
+                ctx.Request.Query["offset"]
+
+        let limit =
+            (string
+             >> fun x ->
+                 match Int32.TryParse x with
+                 | false, _ -> 10
+                 | true, y -> y)
+                ctx.Request.Query["limit"]
+
         let! results = context.Logs.getLogs limit offset
 
         return!

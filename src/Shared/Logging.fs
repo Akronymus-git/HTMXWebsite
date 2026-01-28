@@ -6,6 +6,7 @@ open System.IO
 open Microsoft.AspNetCore.Http
 open Saturn.ControllerHelpers
 open Giraffe.Core
+open Shared.User
 
 
 type LoggingData =
@@ -80,53 +81,61 @@ let AddLoggingData (ctx: HttpContext) (path: string) (value: LoggingData) =
 
     ctx.Items["LoggingData"] <- insertData data (List.tail partials) (List.head partials) value
 
-let logRequest path success (ctx: HttpContext) =
-    AddLoggingData ctx "request.success" (Bool success)
-    let loggingObj = ctx.Items["LoggingData"] :?> LoggingData
-    let logLine = StringifyLoggingObj loggingObj
+let logRequest (logsContext:DBContext.Logs.Logs) path success (ctx: HttpContext) =
+    task {
+        AddLoggingData ctx "request.success" (Bool success)
+        let loggingObj = ctx.Items["LoggingData"] :?> LoggingData
+        let logLine = StringifyLoggingObj loggingObj
 
-    if success then
-        if Random.Shared.Next(0, 100) < 10 then
+        if success then
+            if Random.Shared.Next(0, 100) <= 100 then
+                let user = GetUserFromCtx ctx
+                let! _ = logsContext.insertLog logLine (Option.map (fun (x: DBContext.Users.User) -> x.Id) user)
+                File.AppendAllText(path, logLine)
+                Console.WriteLine logLine
+        else
             File.AppendAllText(path, logLine)
             Console.WriteLine logLine
-    else
-        File.AppendAllText(path, logLine)
-        Console.WriteLine logLine
+    }
 
-let withLogger (filepath: string) (next: HttpFunc) (ctx: HttpContext) =
-    let requestInfo =
-        Obj
-            [ "request",
-              Obj
-                  [ "path", Str ctx.Request.Path
-                    "method", Str ctx.Request.Method
-                    "time", Str(DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture)) ] ]
+let withLogger (dbcontext: DBContext.Data) (filepath: string) (next: HttpFunc) (ctx: HttpContext) =
+    task {
+            
+        let requestInfo =
+            Obj
+                [ "request",
+                  Obj
+                      [ "path", Str ctx.Request.Path
+                        "method", Str ctx.Request.Method
+                        "userAgent", Str (ctx.Request.Headers["User-Agent"].ToString())
+                        "time", Str(DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture)) ] ]
 
-    ctx.Items.Add("LoggingData", requestInfo)
+        ctx.Items.Add("LoggingData", requestInfo)
 
-    for param in ctx.Request.Query do
-        for value in param.Value do
-            AddLoggingData ctx $"request.queryparams.{param.Key}" (Str value)
+        for param in ctx.Request.Query do
+            for value in param.Value do
+                AddLoggingData ctx $"request.queryparams.{param.Key}" (Str value)
 
-    try
-        let res = next ctx
+        try
+            let res = next ctx
 
-        AddLoggingData
-            ctx
-            "response"
-            (Obj
-                [ "statusCode", (Num ctx.Response.StatusCode)
-                  "time", (Str(DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture))) ])
+            AddLoggingData
+                ctx
+                "response"
+                (Obj
+                    [ "statusCode", (Num ctx.Response.StatusCode)
+                      "time", (Str(DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture))) ])
 
-        logRequest filepath true ctx
-        res
-    with e ->
-        AddLoggingData ctx "Errors" (Str <| e.Message)
-        logRequest filepath false ctx
-        let mutable ie = e.InnerException
+            do! logRequest dbcontext.Logs filepath true ctx
+            return! res
+        with e ->
+            AddLoggingData ctx "Errors" (Str <| e.Message)
+            do! logRequest dbcontext.Logs filepath false ctx
+            let mutable ie = e.InnerException
 
-        while ie <> null do
-            Console.WriteLine e.Message
-            ie <- ie.InnerException
+            while ie <> null do
+                Console.WriteLine e.Message
+                ie <- ie.InnerException
 
-        Response.internalError ctx e.Message
+            return! Response.internalError ctx e.Message
+    }

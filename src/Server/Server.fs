@@ -62,7 +62,7 @@ let app =
 
         use_router (
             pipeline {
-                plug (withLogger "log.txt")
+                plug (withLogger context "log.txt")
                 plug (Shared.User.WithUser context)
                 plug webApp
             }

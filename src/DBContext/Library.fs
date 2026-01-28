@@ -11,5 +11,4 @@ type Data(connection: SqliteConnection) =
     member val Sessions = Sessions connection
     member val Logs = Logs connection
     member val Permissions = Permissions connection
-    member val private Connection = connection
-    member x.Open() = x.Connection.Open()
+    member x.Open() = connection.Open()
