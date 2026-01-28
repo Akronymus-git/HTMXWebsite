@@ -11,6 +11,9 @@ open Giraffe.Core
 let userStr = "user"
 [<Literal>]
 let permissionsStr = "userPermissions"
+
+
+
 let GetUserFromCtx (ctx: HttpContext) =
     match ctx.Items.TryGetValue userStr with
     | true, o -> Some (o :?> DBContext.Users.User)

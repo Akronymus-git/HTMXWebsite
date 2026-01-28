@@ -17,3 +17,10 @@ input-grid {
 input:has(+ details > error-label) {
     border-color: red;
 }
+log-table {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(3, auto);
+    gap: 5px;
+    
+}

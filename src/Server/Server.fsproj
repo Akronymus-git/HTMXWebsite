@@ -32,7 +32,7 @@
         <ProjectReference Include="..\Shared\Shared.fsproj"/>
     </ItemGroup>
     <ItemGroup>
-        <Content Include="public\*"/>
+        <Content Include="public\*" CopyToPublishDirectory="Always"/>
         <Content Include="webpack.config.js"/>
     </ItemGroup>
     <ItemGroup>

@@ -67,9 +67,9 @@ let app =
                 plug webApp
             }
         )
+        use_static "public/"
 
         memory_cache
-        use_static "public/"
         use_gzip
         service_config id
 
