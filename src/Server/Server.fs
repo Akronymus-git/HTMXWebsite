@@ -4,6 +4,7 @@ open System.Net
 open ClassLibrary1
 open Logging
 open Giraffe
+open Microsoft.AspNetCore.Http
 open Microsoft.Data.Sqlite
 open Saturn
 open DbUp
@@ -43,7 +44,8 @@ let notFoundPipeline =
 let context = DBContext.Data(new SqliteConnection(connectionString))
 context.Open()
 
-
+let withContext handler next ctx  =
+    handler ctx next ctx
 let webApp =
     router {
         get "/discord" (redirectTo true "https://discord.gg/yK4WsfV5zy")
@@ -51,9 +53,13 @@ let webApp =
         forward "/capSim" CapSim.Router
         forward "/admin" (Admin.Admin.Router context)
         forward "/bingo" (Bingo.Router context)
-        get "/" (htmlString "test")
+        get "/" (withContext (Client.Index.Page >> htmlView))
         not_found_handler notFoundPipeline
     }
+
+let NormalizePath next (ctx: HttpContext) =
+    ctx.Request.Path <- ctx.Request.Path.Value.ToLowerInvariant()
+    next ctx
 
 
 let app =
@@ -62,6 +68,7 @@ let app =
 
         use_router (
             pipeline {
+                plug (NormalizePath)
                 plug (withLogger context "log.txt")
                 plug (Shared.User.WithUser context)
                 plug webApp

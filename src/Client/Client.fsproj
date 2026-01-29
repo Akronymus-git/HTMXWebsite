@@ -22,6 +22,8 @@
         <Compile Include="CapSim\Index.fs"/>
         <Compile Include="Admin\Users\Users.fs" />
         <Compile Include="Admin\Users\UserDetails.fs" />
+        <Compile Include="Admin\Index.fs" />
+        <Compile Include="Index.fs" />
     </ItemGroup>
 
     <ItemGroup>

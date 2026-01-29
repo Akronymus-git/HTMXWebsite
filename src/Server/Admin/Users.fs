@@ -10,11 +10,11 @@ open Saturn
 open Shared
 
 [<CLIMutable>]
-type LogQuery = { limit: int; offset: int }
+type UsersQuery = { limit: int; offset: int }
 
 
 let userTable (context: DBContext.Data) next (ctx: HttpContext) =
-    let query = ctx.BindQueryString<LogQuery>()
+    let query = ctx.BindQueryString<UsersQuery>()
     task {
         let! (results: Users.User list) =
             context.Users.getUserList query.limit query.offset
@@ -85,8 +85,9 @@ let removePermissionFromUser (context: DBContext.Data) userId next (ctx: HttpCon
     }   
 let Router (dbcontext: DBContext.Data) =
     router {
-        getf "%i" (userDetails dbcontext)
-        postf "%i" (addPermissionToUser dbcontext)
-        deletef "%i" (removePermissionFromUser dbcontext)
+        getf "/%i" (userDetails dbcontext)
+        postf "/%i" (addPermissionToUser dbcontext)
+        deletef "/%i" (removePermissionFromUser dbcontext)
         get "" (userTable dbcontext)
+        get "/" (userTable dbcontext)
     }

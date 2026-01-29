@@ -18,6 +18,8 @@ let adminAuth next ctx =
 let Router (dbcontext: DBContext.Data) =
     router {
         pipe_through (adminAuth)
-        forward "/Logs" (Logs.Router dbcontext)
-        forward "/Users" (Users.Router dbcontext)
+        forward "/logs" (Logs.Router dbcontext)
+        forward "/users" (Users.Router dbcontext)
+        get "/" (htmlView Client.Admin.Index.Page)
+        get "" (htmlView Client.Admin.Index.Page)
     }
