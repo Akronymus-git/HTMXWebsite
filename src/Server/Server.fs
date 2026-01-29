@@ -1,12 +1,14 @@
 module Server.Server
 
 open System.Net
+open System.Text.RegularExpressions
 open ClassLibrary1
 open Logging
 open Giraffe
 open Microsoft.AspNetCore.Http
 open Microsoft.Data.Sqlite
 open Saturn
+open System.Web
 open DbUp
 open DbUp.Engine
 open System
@@ -50,7 +52,7 @@ let webApp =
     router {
         get "/discord" (redirectTo true "https://discord.gg/yK4WsfV5zy")
         forward "/login" (Login.Router context)
-        forward "/capSim" CapSim.Router
+        forward "/capsim" CapSim.Router
         forward "/admin" (Admin.Admin.Router context)
         forward "/bingo" (Bingo.Router context)
         get "/" (withContext (Client.Index.Page >> htmlView))
@@ -58,8 +60,15 @@ let webApp =
     }
 
 let NormalizePath next (ctx: HttpContext) =
-    ctx.Request.Path <- ctx.Request.Path.Value.ToLowerInvariant()
-    next ctx
+    let path = ctx.Request.Path.Value
+    let loweredPath = path.ToLowerInvariant()
+    if path.EndsWith '/' && path.Length > 1  then
+        redirectTo true (loweredPath.Substring(0, path.Length - 1)) earlyReturn ctx 
+    else
+        if (path <> loweredPath) then
+            redirectTo true loweredPath earlyReturn ctx
+        else
+            next ctx
 
 
 let app =
@@ -75,7 +84,6 @@ let app =
             }
         )
         use_static "public/"
-
         memory_cache
         use_gzip
         service_config id
