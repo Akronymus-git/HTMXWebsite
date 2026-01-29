@@ -66,7 +66,10 @@ let NormalizePath next (ctx: HttpContext) =
         redirectTo true (loweredPath.Substring(0, path.Length - 1)) earlyReturn ctx 
     else
         if (path <> loweredPath) then
-            redirectTo true loweredPath earlyReturn ctx
+            if ctx.Request.QueryString.HasValue then
+                redirectTo true (loweredPath+ ctx.Request.QueryString.Value) earlyReturn ctx
+            else
+                redirectTo true loweredPath earlyReturn ctx
         else
             next ctx
 
