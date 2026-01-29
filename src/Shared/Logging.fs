@@ -81,7 +81,7 @@ let AddLoggingData (ctx: HttpContext) (path: string) (value: LoggingData) =
 
     ctx.Items["LoggingData"] <- insertData data (List.tail partials) (List.head partials) value
 
-let logRequest (logsContext:DBContext.Logs.Logs) path success (ctx: HttpContext) =
+let logRequest (logsContext: DBContext.Logs.Logs) path success (ctx: HttpContext) =
     task {
         AddLoggingData ctx "request.success" (Bool success)
         let loggingObj = ctx.Items["LoggingData"] :?> LoggingData
@@ -101,15 +101,19 @@ let logRequest (logsContext:DBContext.Logs.Logs) path success (ctx: HttpContext)
 
 let withLogger (dbcontext: DBContext.Data) (filepath: string) (next: HttpFunc) (ctx: HttpContext) =
     task {
-            
+
         let requestInfo =
             Obj
                 [ "request",
                   Obj
-                      [ "path", Str ctx.Request.Path
+                      [ "path", Str (ctx.Request.Path.ToString())
                         "method", Str ctx.Request.Method
-                        "userAgent", Str (ctx.Request.Headers["User-Agent"].ToString())
-                        "time", Str(DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture)) ] ]
+                        "userAgent", Str(ctx.Request.Headers["User-Agent"].ToString())
+                        "time", Str(DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture))
+                        match ctx.Request.Headers.TryGetValue "X-Forwarded-For" with
+                        | true, source -> "ip", Str(source.ToString())
+                        | false, _ -> "ip", Str(ctx.Request.HttpContext.Connection.RemoteIpAddress.ToString())
+                        ] ]
 
         ctx.Items.Add("LoggingData", requestInfo)
 
