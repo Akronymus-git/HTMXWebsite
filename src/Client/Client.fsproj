@@ -15,7 +15,6 @@
         <Compile Include="SharedView.fs"/>
         <Compile Include="Status_404.fs"/>
         <Compile Include="Login.fs"/>
-        <Compile Include="Log.fs"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -23,6 +22,7 @@
         <Compile Include="Admin\Users\Users.fs" />
         <Compile Include="Admin\Users\UserDetails.fs" />
         <Compile Include="Admin\Index.fs" />
+        <Compile Include="Admin\Logs\Log.fs" />
         <Compile Include="Index.fs" />
     </ItemGroup>
 

@@ -30,7 +30,7 @@ let returnTable (context: DBContext.Data) next (ctx: HttpContext) =
 
         return!
             ((pipeline {
-                render_html (Client.Log.DisplayLogs results limit offset)
+                render_html (Client.Admin.Logs.Index results limit offset)
                 set_status_code 200
             })
                 next
