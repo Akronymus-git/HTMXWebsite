@@ -59,19 +59,6 @@ let webApp =
         not_found_handler notFoundPipeline
     }
 
-let NormalizePath next (ctx: HttpContext) =
-    let path = ctx.Request.Path.Value
-    let loweredPath = path.ToLowerInvariant()
-    if path.EndsWith '/' && path.Length > 1  then
-        redirectTo true (loweredPath.Substring(0, path.Length - 1)) earlyReturn ctx 
-    else
-        if (path <> loweredPath) then
-            if ctx.Request.QueryString.HasValue then
-                redirectTo true (loweredPath+ ctx.Request.QueryString.Value) earlyReturn ctx
-            else
-                redirectTo true loweredPath earlyReturn ctx
-        else
-            next ctx
 
 
 let app =
@@ -80,9 +67,9 @@ let app =
 
         use_router (
             pipeline {
-                plug (NormalizePath)
-                plug (withLogger context "log.txt")
-                plug (Shared.User.WithUser context)
+                plug Pipelines.Path.WithPathNormalization
+                plug (Pipelines.Logging.WithLogging context "log.txt")
+                plug (Pipelines.User.WithUser context)
                 plug webApp
             }
         )

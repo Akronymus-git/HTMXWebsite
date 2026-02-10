@@ -11,6 +11,9 @@
         <Compile Include="Admin\Logs.fs"/>
         <Compile Include="Admin\Users.fs" />
         <Compile Include="Admin\Admin.fs"/>
+        <Compile Include="Pipelines\Logging.fs" />
+        <Compile Include="Pipelines\User.fs" />
+        <Compile Include="Pipelines\Path.fs" />
         <Compile Include="Server.fs"/>
     </ItemGroup>
     <ItemGroup>
