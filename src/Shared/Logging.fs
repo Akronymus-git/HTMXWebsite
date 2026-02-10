@@ -87,14 +87,13 @@ let logRequest (logsContext: DBContext.Logs.Logs) path success (ctx: HttpContext
         let loggingObj = ctx.Items["LoggingData"] :?> LoggingData
         let logLine = StringifyLoggingObj loggingObj
 
+        Console.WriteLine logLine
         if success then
             //only log a percentage of successful request
             if Random.Shared.Next(0, 100) <= 5 then
                 let user = GetUserFromCtx ctx
                 let! _ = logsContext.insertLog logLine (Option.map (fun (x: DBContext.Users.User) -> x.Id) user)
                 File.AppendAllText(path, logLine)
-                Console.WriteLine logLine
         else
             File.AppendAllText(path, logLine)
-            Console.WriteLine logLine
     }
