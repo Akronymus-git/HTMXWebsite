@@ -70,6 +70,7 @@ let app =
                 plug Pipelines.Path.WithPathNormalization
                 plug (Pipelines.Logging.WithLogging context "log.txt")
                 plug (Pipelines.User.WithUser context)
+                plug Pipelines.Security.RejectUserAgent
                 plug webApp
             }
         )
