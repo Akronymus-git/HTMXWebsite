@@ -7,7 +7,7 @@
 
     <ItemGroup>
         <PackageReference Include="Giraffe.ViewEngine" Version="1.4.0"/>
-        <PackageReference Update="FSharp.Core" Version="8.0.301"/>
+        <PackageReference Update="FSharp.Core" Version="8.0.403" />
         <PackageReference Include="Giraffe.ViewEngine.Htmx" Version="2.0.0"/>
     </ItemGroup>
 
