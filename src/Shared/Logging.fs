@@ -88,11 +88,32 @@ let logRequest (logsContext: DBContext.Logs.Logs) path success (ctx: HttpContext
         let logLine = StringifyLoggingObj loggingObj
 
         Console.WriteLine logLine
+
         if success then
             //only log a percentage of successful request
             if Random.Shared.Next(0, 100) <= 5 then
                 let user = GetUserFromCtx ctx
-                let! _ = logsContext.insertLog logLine (Option.map (fun (x: DBContext.Users.User) -> x.Id) user)
+
+                let! _ =
+                    logsContext.insertLog
+                        logLine
+                        (Option.map (fun (x: DBContext.Users.User) -> x.Id) user)
+                        (match ctx.Request.Headers.TryGetValue("User-Agent") with
+                         | true, stringValues ->
+                             match List.ofSeq stringValues with
+                             | [] -> None
+                             | l :: _ -> Some l
+                         | false, stringValues -> failwith "todo")
+                        (match ctx.Request.Headers.TryGetValue "X-Forwarded-For" with
+                         | true, source -> Some (source.ToString())
+                         | false, _ -> Some (ctx.Request.HttpContext.Connection.RemoteIpAddress.ToString()))
+                        ctx.Response.StatusCode
+                        (match ctx.Request.Path.HasValue with
+                         | true -> Some ctx.Request.Path.Value
+                         | false -> None)
+                        success
+                        (Some ctx.Request.Method)
+
                 File.AppendAllText(path, logLine)
         else
             File.AppendAllText(path, logLine)

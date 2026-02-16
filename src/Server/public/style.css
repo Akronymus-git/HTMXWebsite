@@ -20,7 +20,7 @@ input:has(+ details > error-label) {
 log-table {
     display: grid;
     width: 100%;
-    grid-template-columns: repeat(4, auto);
+    grid-template-columns: repeat(10, auto);
     gap: 5px;
     
 }
