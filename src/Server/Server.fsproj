@@ -10,6 +10,7 @@
         <Compile Include="Bingo.fs"/>
         <Compile Include="Admin\Logs.fs"/>
         <Compile Include="Admin\Users.fs" />
+        <Compile Include="Admin\Redirects.fs" />
         <Compile Include="Admin\Admin.fs"/>
         <Compile Include="Pipelines\Logging.fs" />
         <Compile Include="Pipelines\User.fs" />

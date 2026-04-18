@@ -11,6 +11,7 @@
         <Compile Include="User.fs"/>
         <Compile Include="Permission.fs" />
         <Compile Include="Logging.fs" />
+        <Compile Include="Redirect.fs" />
     </ItemGroup>
 
     <ItemGroup>

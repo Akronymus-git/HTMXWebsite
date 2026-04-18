@@ -16,6 +16,7 @@ open System.Reflection
 
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Data.Sqlite
+open Server.Admin
 
 [<Literal>]
 let connectionString = "Data Source=data.db"
@@ -56,6 +57,7 @@ let webApp =
         forward "/admin" (Admin.Admin.Router context)
         forward "/bingo" (Bingo.Router context)
         get "/" (withContext (Client.Index.Page >> htmlView))
+        forward "/" (Redirects.HandleRedirect context)
         not_found_handler notFoundPipeline
     }
 

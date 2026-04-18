@@ -7,4 +7,6 @@ let Page =
         a [_href "/admin/logs?limit=100&offset=0"] [Text "Logs"]
         br []
         a [_href "/admin/users?limit=100&offset=0"] [Text "Users"]
+        br []
+        a [_href "/admin/redirects"] [Text "Redirects"]
     ]

@@ -20,6 +20,7 @@ let Router (dbcontext: DBContext.Data) =
         pipe_through (adminAuth)
         forward "/logs" (Logs.Router dbcontext)
         forward "/users" (Users.Router dbcontext)
+        forward "/redirects" (Redirects.Router dbcontext)
         get "/" (htmlView Client.Admin.Index.Page)
         get "" (htmlView Client.Admin.Index.Page)
     }
