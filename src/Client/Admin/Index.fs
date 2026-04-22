@@ -10,5 +10,5 @@ let Page =
         br []
         a [_href "/admin/redirects"] [Text "Redirects"]
         br []
-        a [_href "/admin/archipelago"] [Text "Redirects"]
+        a [_href "/admin/archipelago"] [Text "Archipelago"]
     ]
