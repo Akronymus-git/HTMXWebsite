@@ -24,6 +24,7 @@
         <Compile Include="Admin\Index.fs" />
         <Compile Include="Admin\Logs\Log.fs" />
         <Compile Include="Admin\Redirects\Redirects.fs" />
+        <Compile Include="Admin\ArchipelagoSessions\Index.fs" />
         <Compile Include="Index.fs" />
     </ItemGroup>
 

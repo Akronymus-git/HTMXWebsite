@@ -13,7 +13,7 @@ open DbUp
 open DbUp.Engine
 open System
 open System.Reflection
-
+open Archipelago
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Data.Sqlite
 open Server.Admin
@@ -43,7 +43,6 @@ let notFoundPipeline =
         set_status_code 404
         plug (htmlView Client.Status_404.Page)
     }
-
 let context = DBContext.Data(new SqliteConnection(connectionString))
 context.Open()
 
@@ -56,6 +55,7 @@ let webApp =
         forward "/capsim" CapSim.Router
         forward "/admin" (Admin.Admin.Router context)
         forward "/bingo" (Bingo.Router context)
+        get "/.well-known/contact" (redirectTo true "mailto://admin@akronymus.net")
         get "/" (withContext (Client.Index.Page >> htmlView))
         forward "/" (Redirects.HandleRedirect context)
         not_found_handler notFoundPipeline

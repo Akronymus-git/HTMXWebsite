@@ -14,6 +14,7 @@
         <Compile Include="Logs.fs"/>
         <Compile Include="Permissions.fs" />
         <Compile Include="Redirects.fs" />
+        <Compile Include="ArchipelagoSessions.fs" />
         <Compile Include="Library.fs"/>
         <EmbeddedResource Include="Migrations/*.sql"/>
     </ItemGroup>

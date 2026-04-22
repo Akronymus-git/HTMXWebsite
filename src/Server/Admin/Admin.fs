@@ -21,6 +21,7 @@ let Router (dbcontext: DBContext.Data) =
         forward "/logs" (Logs.Router dbcontext)
         forward "/users" (Users.Router dbcontext)
         forward "/redirects" (Redirects.Router dbcontext)
+        forward "/archipelago" (ArchipelagoSessions.Router dbcontext)
         get "/" (htmlView Client.Admin.Index.Page)
         get "" (htmlView Client.Admin.Index.Page)
     }

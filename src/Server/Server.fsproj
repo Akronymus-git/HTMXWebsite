@@ -11,6 +11,7 @@
         <Compile Include="Admin\Logs.fs"/>
         <Compile Include="Admin\Users.fs" />
         <Compile Include="Admin\Redirects.fs" />
+        <Compile Include="Admin\ArchipelagoSessions.fs" />
         <Compile Include="Admin\Admin.fs"/>
         <Compile Include="Pipelines\Logging.fs" />
         <Compile Include="Pipelines\User.fs" />
@@ -19,6 +20,7 @@
         <Compile Include="Server.fs"/>
     </ItemGroup>
     <ItemGroup>
+        <PackageReference Include="Archipelago.MultiClient.Net" Version="6.7.1" />
         <PackageReference Include="BCrypt.Net-Next" Version="4.0.3"/>
         <PackageReference Include="BouncyCastle.Cryptography" Version="2.6.2"/>
         <PackageReference Include="Dapper.FSharp" Version="4.9.0"/>
