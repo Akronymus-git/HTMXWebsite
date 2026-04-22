@@ -25,7 +25,7 @@ let loggingSocket gamename (message: DeathLink) =
     Console.WriteLine(gamename + "Source" + (match message.Cause with | null -> "" | cause -> cause.ToString()))
     File.AppendAllText (gamename, (DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss") + " --- Deathlink source: " + (message.Source.ToString()) +  " Deathlink cause: " + (match message.Cause with | null -> "" | cause -> cause.ToString()) + "\r\n"))
 
-let addSession gamename uri game name password =
+let addSession (gamename:string) uri game name password =
     let newSession = ArchipelagoSessionFactory.CreateSession uri
 
     
@@ -41,8 +41,8 @@ let addSession gamename uri game name password =
     )
     match result.Successful with
     | true ->
-        let logger = (logging gamename)
-        let logger_socket = (loggingSocket gamename)
+        let logger = (logging (gamename.ToLowerInvariant()))
+        let logger_socket = (loggingSocket (gamename.ToLowerInvariant()))
         newSession.MessageLog.add_OnMessageReceived logger
         let deathlinkservice = newSession.CreateDeathLinkService()
         deathlinkservice.add_OnDeathLinkReceived logger_socket
@@ -68,7 +68,7 @@ let removeSession (dbcontext: DBContext.Data) gamename next ctx =
     | _ -> next ctx
 
 let extractFields (formdata: IFormCollection) =
-    string formdata["gamename"],
+    (string formdata["gamename"]).ToLowerInvariant(),
     Uri ("wss://" + (string formdata["uri"])),
     string formdata["game"],
     string formdata["name"],
