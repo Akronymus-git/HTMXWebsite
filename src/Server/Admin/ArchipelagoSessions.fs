@@ -104,7 +104,16 @@ let detailsPage (dbcontext:DBContext.Data) gamename next ctx=
         | Some value -> return! htmlView (Client.Admin.ArchipelagoSessions.SessionDetails.Page value) next ctx
         
     }
-    
+let getFile (gamename: string) (next: HttpFunc) (ctx: HttpContext) =
+    task {
+        
+        let response = ctx.Response
+        response.Clear()
+        response.ContentType <- "application/octet-stream"
+        response.Headers.Add ("Content-Disposition", string ("attachment; filename=" + gamename + ".txt;") )
+        do! response.SendFileAsync (gamename)
+        return Some ctx
+    }
     
 let Router (dbcontext: DBContext.Data) =
     router {
@@ -118,6 +127,7 @@ let Router (dbcontext: DBContext.Data) =
                 | "delete" -> return! removeSession dbcontext name next ctx
                 | _ -> return! next ctx
             })
+        getf "/%s/file" (getFile)
         getf "/%s" (detailsPage dbcontext)
         get "" (overviewPage dbcontext)
 

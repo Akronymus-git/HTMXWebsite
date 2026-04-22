@@ -14,6 +14,7 @@ let Page (session: ArchipelagoSessions.ArchipelagoSessionRow ) =
               []
               [
                 a [_href "/admin/archipelago"] [Text "back"]
+                a [_href $"/admin/archipelago/{session.GameName}/file"] [Text "Get file"]
                 h1 [] [ Text $"Archipelago Session {session.GameName}" ]
                 br []
                 Text session.Uri
