@@ -64,8 +64,7 @@ let removeSession (dbcontext: DBContext.Data) gamename =
         deathLinkService.remove_OnDeathLinkReceived deathlinkLogger
         memorySessions.Remove gamename |> ignore
         dbcontext.ArchipelagoSessions.DeleteSession gamename |> ignore
-        failwith "todo"
-    | _ -> failwith "todo"
+    | _ -> ()
 
 let extractFields (formdata: IFormCollection) =
     string formdata["gamename"],
@@ -82,7 +81,7 @@ let SessionAdd (dbcontext: DBContext.Data) (next: HttpFunc) (ctx: HttpContext) =
         | Some (newSession, logger, deathlinkservice, deathlinklogger) ->
             memorySessions.Add(KeyValuePair(gamename, (newSession, logger, deathlinkservice, deathlinklogger)))
             dbcontext.ArchipelagoSessions.InsertSession (gamename, (string uri), game, name, Some password) |> ignore
-        | None -> failwith "todo"
+        | None -> ()
         return! (next ctx)
     }
 
