@@ -53,7 +53,7 @@ let addSession gamename uri game name password =
     
     
 
-let removeSession (dbcontext: DBContext.Data) gamename =
+let removeSession (dbcontext: DBContext.Data) gamename next ctx =
     match memorySessions.TryGetValue gamename with
     | true, (session, logger,deathLinkService,  deathlinkLogger) ->
         match session.Socket.Connected with
@@ -64,7 +64,8 @@ let removeSession (dbcontext: DBContext.Data) gamename =
         deathLinkService.remove_OnDeathLinkReceived deathlinkLogger
         memorySessions.Remove gamename |> ignore
         dbcontext.ArchipelagoSessions.DeleteSession gamename |> ignore
-    | _ -> ()
+        next ctx
+    | _ -> next ctx
 
 let extractFields (formdata: IFormCollection) =
     string formdata["gamename"],
