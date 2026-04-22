@@ -48,6 +48,7 @@ context.Open()
 
 let withContext handler next ctx  =
     handler ctx next ctx
+Admin.ArchipelagoSessions.reconnectAll context |> ignore
 let webApp =
     router {
         get "/discord" (redirectTo true "https://discord.gg/yK4WsfV5zy")

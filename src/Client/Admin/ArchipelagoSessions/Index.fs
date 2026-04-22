@@ -1,8 +1,9 @@
 module Client.Admin.ArchipelagoSessions.Index
 
+open DBContext
 open Giraffe.ViewEngine
 
-let Page =
+let Page (sessions: ArchipelagoSessions.ArchipelagoSessionRow list) =
     html
         []
         [ head
@@ -31,7 +32,18 @@ let Page =
                       br []
 
                       label [] [ Text "Password" ]
-                      input [ _type "password"; _name "password" ] 
+                      input [ _type "password"; _name "password" ]
                       br []
 
-                      input [ _type "submit"; _value "Add Session" ] ] ] ]
+                      input [ _type "submit"; _value "Add Session" ] ]
+                div
+                    [ _style "display:flex;flex-direction:column;" ]
+                    [ for sess in sessions do
+                          div
+                              [ _style "display:flex;flex-direction:row;" ]
+                              [
+                                a [_href $"/admin/archipelago/{sess.GameName}" ] [ Text sess.GameName ]
+                                form
+                                    [ _method "post"; _action $"/admin/archipelago/{sess.GameName}" ]
+                                    [ input [ _type "hidden"; _name "method"; _value "delete" ]
+                                      button [ _type "submit" ] [ Text "Delete" ] ] ] ] ] ]

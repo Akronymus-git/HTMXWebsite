@@ -2,6 +2,7 @@ module Server.Admin.ArchipelagoSessions
 
 open System
 open System.Collections.Generic
+open System.IO
 open Archipelago.MultiClient.Net
 open Archipelago.MultiClient.Net.Enums
 open Archipelago.MultiClient.Net.MessageLog.Messages
@@ -12,10 +13,11 @@ open Newtonsoft.Json.Linq
 open Saturn
 
 let memorySessions: IDictionary<string, ArchipelagoSession * (LogMessage -> unit)> =
-    dict []
+    Dictionary<string, ArchipelagoSession * (LogMessage -> unit)> ()
 
 let logging gamename (message: LogMessage) =
     Console.WriteLine(gamename + (message.ToString()))
+    File.AppendAllText (gamename, (DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss") + " --- " + (message.ToString()) + "\r\n"))
 
 let addSession gamename uri game name password =
     let newSession = ArchipelagoSessionFactory.CreateSession uri
@@ -80,19 +82,43 @@ let reconnectAll (dbcontext: DBContext.Data)  =
                        |> FSharp.Control.TaskSeq.toListAsync
         let addsession (sess: ArchipelagoSessionRow) =
             match addSession sess.GameName (Uri sess.Uri) sess.Game sess.Name sess.Password with
-            | None -> failwith "todo"
+            | None -> ()
             | Some (newSession, logger) -> memorySessions.Add(KeyValuePair(sess.GameName, (newSession, logger)))
 
         List.iter addsession dbSessions 
     }
 
+let overviewPage (dbcontext:DBContext.Data) next ctx=
+    task {
+        let! dbSessions = dbcontext.ArchipelagoSessions.GetAllSessions ()
+                       |> FSharp.Control.TaskSeq.toListAsync
+        return! htmlView (Client.Admin.ArchipelagoSessions.Index.Page dbSessions) next ctx
+    }
+    
 
+let detailsPage (dbcontext:DBContext.Data) gamename next ctx=
+    task {
+        let! session = dbcontext.ArchipelagoSessions.GetSession gamename
+        match session with
+        | None -> return! (redirectTo false "/admin/archipelago" next ctx)
+        | Some value -> return! htmlView (Client.Admin.ArchipelagoSessions.SessionDetails.Page value) next ctx
+        
+    }
+    
+    
 let Router (dbcontext: DBContext.Data) =
     router {
         // ReSharper disable FSharpInterpolatedString
-        getf "/%s" (failwith "todo")
         post "" (SessionAdd dbcontext)
-        deletef "/%s" (removeSession dbcontext)
-        get "" (htmlView Client.Admin.ArchipelagoSessions.Index.Page)
+        postf "/%s" (fun name next ctx ->
+            task {
+                let! form = ctx.Request.ReadFormAsync()
+
+                match string form["method"] with
+                | "delete" -> return! removeSession dbcontext name next ctx
+                | _ -> return! next ctx
+            })
+        getf "/%s" (detailsPage dbcontext)
+        get "" (overviewPage dbcontext)
 
     }

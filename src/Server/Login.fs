@@ -31,7 +31,7 @@ let validateFields (username: string option) (password: string option) (email: s
         | None -> yield "password", "Must not be empty"
         | Some pw ->
             if pw.Length < 10 then
-                yield "password", "Min length: 5"
+                yield "password", "Min length: 10"
 
             if Regex.IsMatch(pw, "[0-9]") |> not then
                 yield "password", "Must contain digit"
