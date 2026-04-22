@@ -4,6 +4,7 @@ open System
 open System.Collections.Generic
 open System.IO
 open Archipelago.MultiClient.Net
+open Archipelago.MultiClient.Net.BounceFeatures.DeathLink
 open Archipelago.MultiClient.Net.Enums
 open Archipelago.MultiClient.Net.MessageLog.Messages
 open DBContext.ArchipelagoSessions
@@ -12,12 +13,17 @@ open Microsoft.AspNetCore.Http
 open Newtonsoft.Json.Linq
 open Saturn
 
-let memorySessions: IDictionary<string, ArchipelagoSession * (LogMessage -> unit)> =
-    Dictionary<string, ArchipelagoSession * (LogMessage -> unit)> ()
+let memorySessions: IDictionary<string, ArchipelagoSession * (LogMessage -> unit) * DeathLinkService * (DeathLink -> unit)> =
+    Dictionary<string, ArchipelagoSession * (LogMessage -> unit) * DeathLinkService  * (DeathLink -> unit)> ()
 
 let logging gamename (message: LogMessage) =
     Console.WriteLine(gamename + (message.ToString()))
     File.AppendAllText (gamename, (DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss") + " --- " + (message.ToString()) + "\r\n"))
+let loggingSocket gamename (message: DeathLink) =
+    
+    Console.WriteLine(gamename + "Cause" + (message.Source.ToString()))
+    Console.WriteLine(gamename + "Source" + (match message.Cause with | null -> "" | cause -> cause.ToString()))
+    File.AppendAllText (gamename, (DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss") + " --- Deathlink source: " + (message.Source.ToString()) +  " Deathlink cause: " + (match message.Cause with | null -> "" | cause -> cause.ToString()) + "\r\n"))
 
 let addSession gamename uri game name password =
     let newSession = ArchipelagoSessionFactory.CreateSession uri
@@ -28,7 +34,7 @@ let addSession gamename uri game name password =
         name,
         ItemsHandlingFlags.AllItems,
         null,
-        [| "DeathLink" |],
+        [| "DeathLink"; "TextOnly"; "Tracker" |],
         null,
         (match password with "" -> null | _ -> password),
         true
@@ -36,9 +42,12 @@ let addSession gamename uri game name password =
     match result.Successful with
     | true ->
         let logger = (logging gamename)
+        let logger_socket = (loggingSocket gamename)
         newSession.MessageLog.add_OnMessageReceived logger
+        let deathlinkservice = newSession.CreateDeathLinkService()
+        deathlinkservice.add_OnDeathLinkReceived logger_socket
             
-        Some (newSession, logger)
+        Some (newSession, logger, deathlinkservice, logger_socket)
     | false -> None
     
     
@@ -46,12 +55,13 @@ let addSession gamename uri game name password =
 
 let removeSession (dbcontext: DBContext.Data) gamename =
     match memorySessions.TryGetValue gamename with
-    | true, (session, logger) ->
+    | true, (session, logger,deathLinkService,  deathlinkLogger) ->
         match session.Socket.Connected with
         | true -> session.Socket.DisconnectAsync() |> Async.AwaitTask |> Async.RunSynchronously
         | false -> ()
 
         session.MessageLog.remove_OnMessageReceived logger
+        deathLinkService.remove_OnDeathLinkReceived deathlinkLogger
         memorySessions.Remove gamename |> ignore
         dbcontext.ArchipelagoSessions.DeleteSession gamename |> ignore
         failwith "todo"
@@ -69,8 +79,8 @@ let SessionAdd (dbcontext: DBContext.Data) (next: HttpFunc) (ctx: HttpContext) =
         let! formdata = ctx.Request.ReadFormAsync()
         let gamename, uri, game, name, password = extractFields formdata
         match addSession gamename uri game name password with
-        | Some (newSession, logger) ->
-            memorySessions.Add(KeyValuePair(gamename, (newSession, logger)))
+        | Some (newSession, logger, deathlinkservice, deathlinklogger) ->
+            memorySessions.Add(KeyValuePair(gamename, (newSession, logger, deathlinkservice, deathlinklogger)))
             dbcontext.ArchipelagoSessions.InsertSession (gamename, (string uri), game, name, Some password) |> ignore
         | None -> failwith "todo"
         return! (next ctx)
@@ -83,7 +93,7 @@ let reconnectAll (dbcontext: DBContext.Data)  =
         let addsession (sess: ArchipelagoSessionRow) =
             match addSession sess.GameName (Uri sess.Uri) sess.Game sess.Name sess.Password with
             | None -> ()
-            | Some (newSession, logger) -> memorySessions.Add(KeyValuePair(sess.GameName, (newSession, logger)))
+            | Some x -> memorySessions.Add(KeyValuePair(sess.GameName, x))
 
         List.iter addsession dbSessions 
     }
